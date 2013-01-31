@@ -1,4 +1,4 @@
-from flask.ext.restful import reqparse, fields, marshal_with  # , abort
+from flask.ext.restful import reqparse, fields, marshal_with, abort
 from flask.ext import restful
 
 from time import time
@@ -265,25 +265,36 @@ class UserObject(restful.Resource):
     def get(self, subject_id, object_id):
         args = self.parser.parse_args()
 
+        vote = self.redis.zscore(
+            get_user_object_key_name(
+                subject_id=subject_id,
+                **args
+            ),
+            object_id,
+        )
+
+        when_ts = self.redis.zscore(
+            get_user_key_name(
+                object_id=object_id,
+                **args
+            ),
+            subject_id,
+        )
+
+        if not (vote and when_ts):
+            m = "No vote on {subject_id} by {object_id}.".format(
+                subject_id=subject_id,
+                object_id=object_id
+            )
+            abort(404, message=m)
+
         return get_user_object_reply(
             subject_id=subject_id,
             object_id=object_id,
-            vote=self.redis.zscore(
-                get_user_object_key_name(
-                    subject_id=subject_id,
-                    **args
-                ),
-                object_id,
-            ) or 0,
+            vote=vote,
             when=datetime.fromtimestamp(
-                self.redis.zscore(
-                    get_user_key_name(
-                        object_id=object_id,
-                        **args
-                    ),
-                    subject_id,
-                ),
-            ) or 0,
+                when_ts,
+            ),
         )
 
     def post(self, subject_id, object_id):
