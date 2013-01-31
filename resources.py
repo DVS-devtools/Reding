@@ -37,10 +37,7 @@ def get_user_object_key_name(**kw):
 
 
 def get_key_name(template, **kw):
-    try:
-        kw = {key: value for (key, value) in kw.iteritems() if value}
-    except:
-        kw = dict((key, value) for (key, value) in kw.iteritems() if value)
+    kw = dict((key, value) for (key, value) in kw.iteritems() if value)
 
     d = KEY_CONFIG.copy()
     d.update(kw)
@@ -277,7 +274,7 @@ class UserObject(restful.Resource):
                     **args
                 ),
                 object_id,
-            ),
+            ) or 0,
             when=datetime.fromtimestamp(
                 self.redis.zscore(
                     get_user_key_name(
@@ -286,7 +283,7 @@ class UserObject(restful.Resource):
                     ),
                     subject_id,
                 ),
-            )
+            ) or 0,
         )
 
     def post(self, subject_id, object_id):
