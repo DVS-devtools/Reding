@@ -20,8 +20,11 @@ Flask-RESTful project at https://github.com/twilio/flask-restful/
 
 CherryPy project at http://cherrypy.org/ - if you wanna try it straight away with a "python reding.py"
 
+Buongiorno Spa -my company-, letting me open sources to the world.
+
 
 LICENSE
+-------
 
 The MIT License (MIT)
 
