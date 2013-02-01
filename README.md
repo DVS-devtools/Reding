@@ -54,7 +54,12 @@ Date: Fri, 01 Feb 2013 17:03:16 GMT
 Server: mindflayer
 ```
 ```json
-{"vote": 9, "when": "Fri, 01 Feb 2013 18:03:16 -0000", "user_id": "gsalluzzo", "object_id": "978-0132678209"}
+{
+    "vote": 9,
+    "when": "Fri, 01 Feb 2013 18:03:16 -0000",
+    "user_id": "gsalluzzo",
+    "object_id": "978-0132678209"
+}
 ```
 
 Let's see if somebody voted something (my memory is like the gold fish one):
@@ -67,7 +72,12 @@ Date: Fri, 01 Feb 2013 17:05:46 GMT
 Server: mindflayer
 ```
 ```json
-[{"amount": 9, "average": "9.0", "object_id": "978-0132678209", "votes_no": 1}]
+[{
+    "amount": 9,
+    "average": "9.0",
+    "object_id": "978-0132678209",
+    "votes_no": 1
+}]
 ```
 
 Not expected... ;) Let's enter another vote:
@@ -80,7 +90,12 @@ Date: Fri, 01 Feb 2013 17:08:03 GMT
 Server: mindflayer
 ```
 ```json
-{"vote": 10, "when": "Fri, 01 Feb 2013 18:08:03 -0000", "user_id": "wchun", "object_id": "978-0132678209"}
+{
+    "vote": 10,
+    "when": "Fri, 01 Feb 2013 18:08:03 -0000",
+    "user_id": "wchun",
+    "object_id": "978-0132678209"
+}
 ```
 The author said '10'! What a surprise! :D
 
@@ -94,7 +109,12 @@ Date: Fri, 01 Feb 2013 17:09:42 GMT
 Server: mindflayer
 ```
 ```json
-[{"amount": 19, "average": "9.5", "object_id": "978-0132678209", "votes_no": 2}]
+[{
+    "amount": 19,
+    "average": "9.5",
+    "object_id": "978-0132678209",
+    "votes_no": 2
+}]
 ```
 
 There's only a book, what if I only get that one??
@@ -107,7 +127,12 @@ Date: Fri, 01 Feb 2013 17:11:13 GMT
 Server: mindflayer
 ```
 ```json
-{"amount": 19, "average": "9.5", "object_id": "978-0132678209", "votes_no": 2}
+{
+    "amount": 19,
+    "average": "9.5",
+    "object_id": "978-0132678209",
+    "votes_no": 2
+}
 ```
 
 Or if I only get my single vote?
@@ -120,7 +145,12 @@ Date: Fri, 01 Feb 2013 17:12:00 GMT
 Server: mindflayer
 ```
 ```json
-{"vote": 9, "when": "Fri, 01 Feb 2013 18:03:16 -0000", "user_id": "gsalluzzo", "object_id": "978-0132678209"}
+{
+    "vote": 9,
+    "when": "Fri, 01 Feb 2013 18:03:16 -0000",
+    "user_id": "gsalluzzo",
+    "object_id": "978-0132678209"
+}
 ```
 
 Let's remove the author's one, he cheated:
@@ -145,7 +175,12 @@ Date: Fri, 01 Feb 2013 17:15:38 GMT
 Server: mindflayer
 ```
 ```json
-{"vote": 3, "when": "Fri, 01 Feb 2013 18:15:38 -0000", "user_id": "mymom", "object_id": "978-0132678209"}
+{
+    "vote": 3,
+    "when": "Fri, 01 Feb 2013 18:15:38 -0000",
+    "user_id": "mymom",
+    "object_id": "978-0132678209"
+}
 ```
 
 Let's see the average, it must be decreased:
@@ -158,7 +193,12 @@ Date: Fri, 01 Feb 2013 17:17:09 GMT
 Server: mindflayer
 ```
 ```json
-{"amount": 12, "average": "6.0", "object_id": "978-0132678209", "votes_no": 2}
+{
+    "amount": 12,
+    "average": "6.0",
+    "object_id": "978-0132678209",
+    "votes_no": 2
+}
 ```
 
 Well, stop programming books...I'm gonna give a '10' to the amazing 'The Lord of the Rings Sketchbook':
@@ -171,7 +211,12 @@ Date: Fri, 01 Feb 2013 17:21:56 GMT
 Server: mindflayer
 ```
 ```json
-{"vote": 10, "when": "Fri, 01 Feb 2013 18:21:56 -0000", "user_id": "gsalluzzo", "object_id": "978-0618640140"}
+{
+    "vote": 10,
+    "when": "Fri, 01 Feb 2013 18:21:56 -0000",
+    "user_id": "gsalluzzo",
+    "object_id": "978-0618640140"
+}
 ```
 
 Let's see the books I voted:
@@ -184,7 +229,17 @@ Date: Fri, 01 Feb 2013 17:22:55 GMT
 Server: mindflayer
 ```
 ```json
-[{"vote": 9, "when": "Fri, 01 Feb 2013 18:03:16 -0000", "user_id": "gsalluzzo", "object_id": "978-0132678209"}, {"vote": 10, "when": "Fri, 01 Feb 2013 18:21:56 -0000", "user_id": "gsalluzzo", "object_id": "978-0618640140"}]
+[{
+    "vote": 9,
+    "when": "Fri, 01 Feb 2013 18:03:16 -0000",
+    "user_id": "gsalluzzo",
+    "object_id": "978-0132678209"
+}, {
+    "vote": 10,
+    "when": "Fri, 01 Feb 2013 18:21:56 -0000",
+    "user_id": "gsalluzzo",
+    "object_id": "978-0618640140"
+}]
 ```
 
 ...and again all books voted:
@@ -197,7 +252,17 @@ Date: Fri, 01 Feb 2013 17:23:51 GMT
 Server: mindflayer
 ```
 ```json
-[{"amount": 10, "average": "10.0", "object_id": "978-0618640140", "votes_no": 1}, {"amount": 12, "average": "6.0", "object_id": "978-0132678209", "votes_no": 2}]
+[{
+    "amount": 10,
+    "average": "10.0",
+    "object_id": "978-0618640140",
+    "votes_no": 1
+}, {
+    "amount": 12,
+    "average": "6.0",
+    "object_id": "978-0132678209",
+    "votes_no": 2
+}]
 ```
 
 
