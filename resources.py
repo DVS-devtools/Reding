@@ -12,27 +12,27 @@ def add_config_args(parser):
         parser.add_argument(k, type=str)
 
 
-def get_user_object_reply(subject_id, object_id, vote, when):
+def get_user_object_reply(object_id, user_id, vote, when):
     return {
-        'subject_id': subject_id,
         'object_id': object_id,
+        'user_id': user_id,
         'vote': vote,
         'when': when,
     }
 
 
 def get_user_key_name(**kw):
-    t = "{prefix}:{object_type}:{object_id}:{subject_types}"
+    t = "{prefix}:{subject}:{user_id}:{objects}"
     return get_key_name(t, **kw)
 
 
 def get_object_key_name(**kw):
-    t = "{prefix}:{subject_types}"
+    t = "{prefix}:{objects}"
     return get_key_name(t, **kw)
 
 
 def get_user_object_key_name(**kw):
-    t = "{prefix}:{subject_type}:{subject_id}:{object_types}"
+    t = "{prefix}:{object}:{object_id}:{subjects}"
     return get_key_name(t, **kw)
 
 
@@ -54,13 +54,13 @@ object_resource_fields = {
     'votes_no': fields.Integer,
     'amount': fields.Integer,
     'average': fields.Float,
-    'subject_id': fields.String,
+    'object_id': fields.String,
 }
 
 user_object_resource_fields = {
     'vote': fields.Integer,
-    'subject_id': fields.String,
     'object_id': fields.String,
+    'user_id': fields.String,
     'when': fields.DateTime
 }
 
@@ -71,7 +71,7 @@ class ObjectList(restful.Resource):
     parser = reqparse.RequestParser()
 
     def __init__(self):
-        super(Object, self).__init__()
+        super(ObjectList, self).__init__()
         add_config_args(self.parser)
 
     @marshal_with(object_resource_fields)
@@ -84,10 +84,10 @@ class ObjectList(restful.Resource):
         )
 
         reply = []
-        for s, a in amounts:
+        for o, a in amounts:
             n = self.redis.zcount(
                 get_user_object_key_name(
-                    subject_id=s,
+                    object_id=o,
                 ),
                 '-inf',
                 '+inf',
@@ -97,7 +97,7 @@ class ObjectList(restful.Resource):
                     votes_no=n,
                     average=a/n,
                     amount=a,
-                    subject_id=s,
+                    object_id=o,
                 )
             )
 
@@ -115,14 +115,14 @@ class Object(restful.Resource):
         self.parser.add_argument('vote', type=int)
 
     @marshal_with(object_resource_fields)
-    def get(self, subject_id):
+    def get(self, object_id):
         args = self.parser.parse_args()
 
         vote = args['vote']
 
         amount = self.redis.zscore(
             get_object_key_name(**args),
-            subject_id,
+            object_id,
         )
 
         min = '-inf'
@@ -133,7 +133,7 @@ class Object(restful.Resource):
 
         number = self.redis.zcount(
             get_user_object_key_name(
-                subject_id=subject_id,
+                object_id=object_id,
                 **args
             ),
             min,
@@ -154,7 +154,7 @@ class Object(restful.Resource):
                 votes_no=number,
                 average=average,
                 amount=amount,
-                subject_id=subject_id,
+                object_id=object_id,
             )
         )
 
@@ -165,16 +165,16 @@ class ObjectUsers(restful.Resource):
     parser = reqparse.RequestParser()
 
     def __init__(self):
-        super(Object, self).__init__()
+        super(ObjectUsers, self).__init__()
         add_config_args(self.parser)
 
     @marshal_with(user_object_resource_fields)
-    def get(self, subject_id):
+    def get(self, object_id):
         args = self.parser.parse_args()
 
         votes = self.redis.zrangebyscore(
             get_user_object_key_name(
-                subject_id=subject_id,
+                object_id=object_id,
                 **args
             ),
             '-inf',
@@ -184,19 +184,19 @@ class ObjectUsers(restful.Resource):
 
         reply = [
             get_user_object_reply(
-                subject_id=subject_id,
-                object_id=o,
+                object_id=object_id,
+                user_id=u,
                 vote=v,
                 when=datetime.fromtimestamp(
                     self.redis.zscore(
                         get_user_key_name(
-                            object_id=o,
+                            user_id=u,
                             **args
                         ),
-                        subject_id,
+                        object_id,
                     ),
                 ),
-            ) for o, v in votes
+            ) for u, v in votes
         ]
 
         return reply
@@ -208,16 +208,16 @@ class UserList(restful.Resource):
     parser = reqparse.RequestParser()
 
     def __init__(self):
-        super(Object, self).__init__()
+        super(UserList, self).__init__()
         add_config_args(self.parser)
 
     @marshal_with(user_object_resource_fields)
-    def get(self, object_id):
+    def get(self, user_id):
         args = self.parser.parse_args()
 
         votetimes = self.redis.zrangebyscore(
             get_user_key_name(
-                object_id=object_id,
+                user_id=user_id,
                 **args
             ),
             '-inf',
@@ -227,25 +227,25 @@ class UserList(restful.Resource):
 
         reply = [
             get_user_object_reply(
-                subject_id=a,
-                object_id=object_id,
+                object_id=o,
+                user_id=user_id,
                 vote=self.redis.zscore(
                     get_user_object_key_name(
-                        subject_id=a,
+                        object_id=o,
                         **args
                     ),
-                    object_id,
+                    user_id,
                 ),
                 when=datetime.fromtimestamp(
                     self.redis.zscore(
                         get_user_key_name(
-                            object_id=object_id,
+                            user_id=user_id,
                             **args
                         ),
-                        a,
+                        o,
                     ),
                 )
-            ) for a, t in votetimes
+            ) for o, t in votetimes
         ]
 
         return reply
@@ -262,56 +262,123 @@ class UserObject(restful.Resource):
         self.parser.add_argument('vote', type=int)
 
     @marshal_with(user_object_resource_fields)
-    def get(self, subject_id, object_id):
+    def get(self, object_id, user_id):
         args = self.parser.parse_args()
 
         vote = self.redis.zscore(
             get_user_object_key_name(
-                subject_id=subject_id,
+                object_id=object_id,
+                **args
+            ),
+            user_id,
+        )
+
+        when_ts = self.redis.zscore(
+            get_user_key_name(
+                user_id=user_id,
                 **args
             ),
             object_id,
         )
 
-        when_ts = self.redis.zscore(
-            get_user_key_name(
-                object_id=object_id,
-                **args
-            ),
-            subject_id,
-        )
-
         if not (vote and when_ts):
-            m = "No vote on {subject_id} by {object_id}.".format(
-                subject_id=subject_id,
-                object_id=object_id
+            m = "No vote on {object_id} by {user_id}.".format(
+                object_id=object_id,
+                user_id=user_id
             )
             abort(404, message=m)
 
         return get_user_object_reply(
-            subject_id=subject_id,
             object_id=object_id,
+            user_id=user_id,
             vote=vote,
             when=datetime.fromtimestamp(
                 when_ts,
             ),
         )
 
-    def post(self, subject_id, object_id):
-        return self.put(subject_id, object_id)
+    def post(self, object_id, user_id):
+        return self.put(object_id, user_id)
 
     @marshal_with(user_object_resource_fields)
-    def put(self, subject_id, object_id):
+    def put(self, object_id, user_id):
         args = self.parser.parse_args()
 
         next_vote = args['vote']
 
-        prev_vote = self.redis.zscore(
+        self._perform_correction(object_id, user_id, next_vote, args)
+
+        self.redis.zadd(
             get_user_object_key_name(
-                subject_id=subject_id,
+                object_id=object_id,
+                **args
+            ),
+            next_vote,
+            user_id,
+        )
+
+        self.redis.zadd(
+            get_user_key_name(
+                user_id=user_id,
+                **args
+            ),
+            time(),
+            object_id,
+        )
+
+        return get_user_object_reply(
+            object_id=object_id,
+            user_id=user_id,
+            vote=self.redis.zscore(
+                get_user_object_key_name(
+                    object_id=object_id,
+                    **args
+                ),
+                user_id,
+            ),
+            when=datetime.fromtimestamp(
+                self.redis.zscore(
+                    get_user_key_name(
+                        user_id=user_id,
+                        **args
+                    ),
+                    object_id,
+                ),
+            )
+        )
+
+    @marshal_with(user_object_resource_fields)
+    def delete(self, object_id, user_id):
+        args = self.parser.parse_args()
+
+        next_vote = 0
+        self._perform_correction(object_id, user_id, next_vote, args)
+
+        self.redis.zrem(
+            get_user_key_name(
+                user_id=user_id,
                 **args
             ),
             object_id,
+        )
+
+        self.redis.zrem(
+            get_user_object_key_name(
+                object_id=object_id,
+                **args
+            ),
+            user_id,
+        )
+
+        return '', 204
+
+    def _perform_correction(self, object_id, user_id, next_vote, args):
+        prev_vote = self.redis.zscore(
+            get_user_object_key_name(
+                object_id=object_id,
+                **args
+            ),
+            user_id,
         )
 
         if not prev_vote:
@@ -323,61 +390,8 @@ class UserObject(restful.Resource):
         if correction:
             self.redis.zincrby(
                 get_object_key_name(**args),
-                subject_id,
+                object_id,
                 correction,
             )
-
-        self.redis.zadd(
-            get_user_object_key_name(
-                subject_id=subject_id,
-                **args
-            ),
-            next_vote,
-            object_id,
-        )
-
-        self.redis.zadd(
-            get_user_key_name(
-                object_id=object_id,
-                **args
-            ),
-            time(),
-            subject_id,
-        )
-
-        return get_user_object_reply(
-            subject_id=subject_id,
-            object_id=object_id,
-            vote=self.redis.zscore(
-                get_user_object_key_name(
-                    subject_id=subject_id,
-                    **args
-                ),
-                object_id,
-            ),
-            when=datetime.fromtimestamp(
-                self.redis.zscore(
-                    get_user_key_name(
-                        object_id=object_id,
-                        **args
-                    ),
-                    subject_id,
-                ),
-            )
-        )
-
-    @marshal_with(user_object_resource_fields)
-    def delete(self, subject_id, object_id):
-        args = self.parser.parse_args()
-
-        self.redis.zrem(
-            get_user_object_key_name(
-                subject_id=subject_id,
-                **args
-            ),
-            object_id,
-        )
-
-        return '', 204
 
 __all__ = (Object, ObjectList, ObjectUsers, UserObject, UserList)

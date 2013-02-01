@@ -8,16 +8,16 @@ app = Flask(__name__)
 api = restful.Api(app)
 
 api.add_resource(ObjectList, '/objects/')
-api.add_resource(ObjectUsers, '/objects/<string:subject_id>/users/')
-api.add_resource(Object, '/objects/<string:subject_id>/')
-api.add_resource(UserList, '/users/<string:object_id>/')
+api.add_resource(ObjectUsers, '/objects/<string:object_id>/users/')
+api.add_resource(Object, '/objects/<string:object_id>/')
+api.add_resource(UserList, '/users/<string:user_id>/')
 api.add_resource(
     UserObject,
-    '/objects/<string:subject_id>/users/<string:object_id>/'
+    '/objects/<string:object_id>/users/<string:user_id>/'
 )
 
 if __name__ == '__main__':
-    #app.run(debug=True)
+    app.run(debug=True)
     from cherrypy import wsgiserver
 
     w = wsgiserver.WSGIPathInfoDispatcher({'/': app.wsgi_app})

@@ -24,10 +24,10 @@ DAEMON_CONFIG = {
 
 KEY_CONFIG = {
     'prefix': 'rating',
-    'object_type': 'user',
-    'subject_type': 'app',
-    'object_types': 'users',
-    'subject_types': 'apps'
+    'subject': 'user',
+    'object': 'app',
+    'subjects': 'users',
+    'objects': 'apps'
 }
 
 __all__ = (REDIS_CONFIG, DAEMON_CONFIG, KEY_CONFIG)
