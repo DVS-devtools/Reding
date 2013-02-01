@@ -273,7 +273,7 @@ Thanks to:
 
 **Flask-RESTful** project at https://github.com/twilio/flask-restful/
 
-**CherryPy** project at http://cherrypy.org/ - if you wanna try it straight away without deploying it
+**CherryPy** project at http://cherrypy.org/ - if you wanna try it right now!
 
 **Buongiorno S.p.A.** -my company-, letting me open sources to the world.
 
