@@ -131,7 +131,7 @@ Server: mindflayer
 {"vote": 3, "when": "Fri, 01 Feb 2013 18:15:38 -0000", "user_id": "mymom", "object_id": "978-0132678209"}
 </pre>
 
-Let's see the average, it must decreased:
+Let's see the average, it must be decreased:
 <pre>
 $ curl -i http://localhost:5000/objects/978-0132678209/
 HTTP/1.1 200 OK
@@ -142,6 +142,42 @@ Server: mindflayer
 
 {"amount": 12, "average": "6.0", "object_id": "978-0132678209", "votes_no": 2}
 </pre>
+
+Well, stop programming books...I'm gonna give a '10' to the amazing 'The Lord of the Rings Sketchbook':
+<pre>
+$ curl -i -XPUT http://localhost:5000/objects/978-0618640140/users/gsalluzzo/?vote=10
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 110
+Date: Fri, 01 Feb 2013 17:21:56 GMT
+Server: mindflayer
+
+{"vote": 10, "when": "Fri, 01 Feb 2013 18:21:56 -0000", "user_id": "gsalluzzo", "object_id": "978-0618640140"}
+</pre>
+
+Let's see the books I voted:
+<pre>
+$ curl -i http://localhost:5000/users/gsalluzzo/
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 223
+Date: Fri, 01 Feb 2013 17:22:55 GMT
+Server: mindflayer
+
+[{"vote": 9, "when": "Fri, 01 Feb 2013 18:03:16 -0000", "user_id": "gsalluzzo", "object_id": "978-0132678209"}, {"vote": 10, "when": "Fri, 01 Feb 2013 18:21:56 -0000", "user_id": "gsalluzzo", "object_id": "978-0618640140"}]
+</pre>
+
+...and again all books voted:
+<pre>
+$ curl -i http://localhost:5000/objects/
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 161
+Date: Fri, 01 Feb 2013 17:23:51 GMT
+Server: mindflayer
+
+[{"amount": 10, "average": "10.0", "object_id": "978-0618640140", "votes_no": 1}, {"amount": 12, "average": "6.0", "object_id": "978-0132678209", "votes_no": 2}]
+<pre>
 
 
 Thanks to:
