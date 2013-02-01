@@ -13,16 +13,17 @@ Some examples:
 --------------
 
 Let's start, my Reding is empty, no book has been voted:
-<pre>
+```
 $ curl -i http://localhost:5000/objects/
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 2
 Date: Fri, 01 Feb 2013 16:50:47 GMT
 Server: mindflayer
-
+```
+```json
 []
-</pre>
+```
 
 I wanna give a '10' to the amazing 'Core Python Applications Programming' book (ISBN-13: 978-0132678209):
 ```
@@ -44,148 +45,160 @@ Server: mindflayer
 Ehy hackers, I've just used a PUT call, but yes, I know, it's the first vote, I should use a POST one. Reding maps POST method on the PUT one, so the client does not need to know if it's the first time I'm voting this object.
 
 OK, '10' is too much indeed, let's change it to '9', or the author will get crazy about that:
-<pre>
+```
 $ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/?vote=9
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 109
 Date: Fri, 01 Feb 2013 17:03:16 GMT
 Server: mindflayer
-
+```
+```json
 {"vote": 9, "when": "Fri, 01 Feb 2013 18:03:16 -0000", "user_id": "gsalluzzo", "object_id": "978-0132678209"}
-</pre>
+```
 
 Let's see if somebody voted something (my memory is like the gold fish one):
-<pre>
+```
 $ curl -i http://localhost:5000/objects/
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 79
 Date: Fri, 01 Feb 2013 17:05:46 GMT
 Server: mindflayer
-
+```
+```json
 [{"amount": 9, "average": "9.0", "object_id": "978-0132678209", "votes_no": 1}]
-</pre>
+```
 
 Not expected... ;) Let's enter another vote:
-<pre>
+```
 $ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/wchun/?vote=10
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 106
 Date: Fri, 01 Feb 2013 17:08:03 GMT
 Server: mindflayer
-
+```
+```json
 {"vote": 10, "when": "Fri, 01 Feb 2013 18:08:03 -0000", "user_id": "wchun", "object_id": "978-0132678209"}
-</pre>
+```
 The author said '10'! What a surprise! :D
 
 Let's get the voted books again:
-<pre>
+```
 $ curl -i http://localhost:5000/objects/
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 80
 Date: Fri, 01 Feb 2013 17:09:42 GMT
 Server: mindflayer
-
+```
+```json
 [{"amount": 19, "average": "9.5", "object_id": "978-0132678209", "votes_no": 2}]
-</pre>
+```
 
 There's only a book, what if I only get that one??
-<pre>
+```
 $ curl -i http://localhost:5000/objects/978-0132678209/
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 78
 Date: Fri, 01 Feb 2013 17:11:13 GMT
 Server: mindflayer
-
+```
+```json
 {"amount": 19, "average": "9.5", "object_id": "978-0132678209", "votes_no": 2}
-</pre>
+```
 
 Or if I only get my single vote?
-<pre>
+```
 $ curl -i http://localhost:5000/objects/978-0132678209/users/gsalluzzo/
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 109
 Date: Fri, 01 Feb 2013 17:12:00 GMT
 Server: mindflayer
-
+```
+```json
 {"vote": 9, "when": "Fri, 01 Feb 2013 18:03:16 -0000", "user_id": "gsalluzzo", "object_id": "978-0132678209"}
-</pre>
+```
 
 Let's remove the author's one, he cheated:
-<pre>
+```
 $ curl -i -XDELETE http://localhost:5000/objects/978-0132678209/users/wchun/
 HTTP/1.1 204 NO CONTENT
 Content-Type: application/json
 Content-Length: 0
 Date: Fri, 01 Feb 2013 17:13:45 GMT
 Server: mindflayer
-
-</pre>
+```
+```json
+```
 
 Let's enter my mom's vote, she does not like Python, she even doesn't know what it is...
-<pre>
+```
 $ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/mymom/?vote=3
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 105
 Date: Fri, 01 Feb 2013 17:15:38 GMT
 Server: mindflayer
-
+```
+```json
 {"vote": 3, "when": "Fri, 01 Feb 2013 18:15:38 -0000", "user_id": "mymom", "object_id": "978-0132678209"}
-</pre>
+```
 
 Let's see the average, it must be decreased:
-<pre>
+```
 $ curl -i http://localhost:5000/objects/978-0132678209/
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 78
 Date: Fri, 01 Feb 2013 17:17:09 GMT
 Server: mindflayer
-
+```
+```json
 {"amount": 12, "average": "6.0", "object_id": "978-0132678209", "votes_no": 2}
-</pre>
+```
 
 Well, stop programming books...I'm gonna give a '10' to the amazing 'The Lord of the Rings Sketchbook':
-<pre>
+```
 $ curl -i -XPUT http://localhost:5000/objects/978-0618640140/users/gsalluzzo/?vote=10
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 110
 Date: Fri, 01 Feb 2013 17:21:56 GMT
 Server: mindflayer
-
+```
+```json
 {"vote": 10, "when": "Fri, 01 Feb 2013 18:21:56 -0000", "user_id": "gsalluzzo", "object_id": "978-0618640140"}
-</pre>
+```
 
 Let's see the books I voted:
-<pre>
+```
 $ curl -i http://localhost:5000/users/gsalluzzo/
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 223
 Date: Fri, 01 Feb 2013 17:22:55 GMT
 Server: mindflayer
-
+```
+```json
 [{"vote": 9, "when": "Fri, 01 Feb 2013 18:03:16 -0000", "user_id": "gsalluzzo", "object_id": "978-0132678209"}, {"vote": 10, "when": "Fri, 01 Feb 2013 18:21:56 -0000", "user_id": "gsalluzzo", "object_id": "978-0618640140"}]
-</pre>
+```
 
 ...and again all books voted:
-<pre>
+```
 $ curl -i http://localhost:5000/objects/
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 161
 Date: Fri, 01 Feb 2013 17:23:51 GMT
 Server: mindflayer
-
+```
+```json
 [{"amount": 10, "average": "10.0", "object_id": "978-0618640140", "votes_no": 1}, {"amount": 12, "average": "6.0", "object_id": "978-0132678209", "votes_no": 2}]
-</pre>
+```
 
 
 Thanks to:
