@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Reding : Rating on Redis - REST API on Flask" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Reding</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/BuongiornoMIP/Reding">View on GitHub</a>
+
+          <h1 id="project_title">Reding</h1>
+          <h2 id="project_tagline">Rating on Redis - REST API on Flask</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/BuongiornoMIP/Reding/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/BuongiornoMIP/Reding/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>Reding</h1>
+
+<h2>Rating on Redis - REST API on Flask</h2>
+
+<p>Reding is a <em>WSGI</em> Python app made using the amazing Flask web framework, and one of its extension, Flask-RESTful.</p>
+
+<p>On Redis side, it uses the powerful sorted set data type to provide all the functionalities.</p>
+
+<h2>Some examples:</h2>
+
+<p>Let's start, my Reding is empty, no book has been voted:</p>
+
+<pre><code>$ curl -i http://localhost:5000/objects/
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 2
+Date: Fri, 01 Feb 2013 16:50:47 GMT
+Server: mindflayer
+</code></pre>
+
+<div class="highlight"><pre><span class="p">[]</span>
+</pre></div>
+
+<p>I wanna give a '10' to the amazing 'Core Python Applications Programming' book (ISBN-13: 978-0132678209):</p>
+
+<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/?vote=10
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 110
+Date: Fri, 01 Feb 2013 16:57:44 GMT
+Server: mindflayer
+</code></pre>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 17:57:44 -0000"</span><span class="p">,</span>
+    <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"gsalluzzo"</span><span class="p">,</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Ehy hackers, I've just used a PUT call, but yes, I know, it's the first vote, I should use a POST one. Reding maps POST method on the PUT one, so the client does not need to know if it's the first time I'm voting this object.</p>
+
+<p>OK, '10' is too much indeed, let's change it to '9', or the author will get crazy about that:</p>
+
+<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/?vote=9
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 109
+Date: Fri, 01 Feb 2013 17:03:16 GMT
+Server: mindflayer
+</code></pre>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 18:03:16 -0000"</span><span class="p">,</span>
+    <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"gsalluzzo"</span><span class="p">,</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Let's see if somebody voted something (my memory is like the gold fish one):</p>
+
+<pre><code>$ curl -i http://localhost:5000/objects/
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 79
+Date: Fri, 01 Feb 2013 17:05:46 GMT
+Server: mindflayer
+</code></pre>
+
+<div class="highlight"><pre><span class="p">[{</span>
+    <span class="nt">"amount"</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="nt">"average"</span><span class="p">:</span> <span class="s2">"9.0"</span><span class="p">,</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
+    <span class="nt">"votes_no"</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">}]</span>
+</pre></div>
+
+<p>Not expected... ;) Let's enter another vote:</p>
+
+<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/wchun/?vote=10
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 106
+Date: Fri, 01 Feb 2013 17:08:03 GMT
+Server: mindflayer
+</code></pre>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 18:08:03 -0000"</span><span class="p">,</span>
+    <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"wchun"</span><span class="p">,</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>The author said '10'! What a surprise! :D</p>
+
+<p>Let's get the voted books again:</p>
+
+<pre><code>$ curl -i http://localhost:5000/objects/
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 80
+Date: Fri, 01 Feb 2013 17:09:42 GMT
+Server: mindflayer
+</code></pre>
+
+<div class="highlight"><pre><span class="p">[{</span>
+    <span class="nt">"amount"</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
+    <span class="nt">"average"</span><span class="p">:</span> <span class="s2">"9.5"</span><span class="p">,</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
+    <span class="nt">"votes_no"</span><span class="p">:</span> <span class="mi">2</span>
+<span class="p">}]</span>
+</pre></div>
+
+<p>There's only a book, what if I only get that one??</p>
+
+<pre><code>$ curl -i http://localhost:5000/objects/978-0132678209/
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 78
+Date: Fri, 01 Feb 2013 17:11:13 GMT
+Server: mindflayer
+</code></pre>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">"amount"</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
+    <span class="nt">"average"</span><span class="p">:</span> <span class="s2">"9.5"</span><span class="p">,</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
+    <span class="nt">"votes_no"</span><span class="p">:</span> <span class="mi">2</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Or if I only get my single vote?</p>
+
+<pre><code>$ curl -i http://localhost:5000/objects/978-0132678209/users/gsalluzzo/
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 109
+Date: Fri, 01 Feb 2013 17:12:00 GMT
+Server: mindflayer
+</code></pre>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 18:03:16 -0000"</span><span class="p">,</span>
+    <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"gsalluzzo"</span><span class="p">,</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Let's remove the author's one, he cheated:</p>
+
+<pre><code>$ curl -i -XDELETE http://localhost:5000/objects/978-0132678209/users/wchun/
+HTTP/1.1 204 NO CONTENT
+Content-Type: application/json
+Content-Length: 0
+Date: Fri, 01 Feb 2013 17:13:45 GMT
+Server: mindflayer
+</code></pre>
+
+<p>Let's enter my mom's vote, she does not like Python, she even doesn't know what it is...</p>
+
+<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/mymom/?vote=3
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 105
+Date: Fri, 01 Feb 2013 17:15:38 GMT
+Server: mindflayer
+</code></pre>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+    <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 18:15:38 -0000"</span><span class="p">,</span>
+    <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"mymom"</span><span class="p">,</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Let's see the average, it must be decreased:</p>
+
+<pre><code>$ curl -i http://localhost:5000/objects/978-0132678209/
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 78
+Date: Fri, 01 Feb 2013 17:17:09 GMT
+Server: mindflayer
+</code></pre>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">"amount"</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="nt">"average"</span><span class="p">:</span> <span class="s2">"6.0"</span><span class="p">,</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
+    <span class="nt">"votes_no"</span><span class="p">:</span> <span class="mi">2</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Well, stop programming books...I'm gonna give a '10' to the amazing 'The Lord of the Rings Sketchbook':</p>
+
+<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0618640140/users/gsalluzzo/?vote=10
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 110
+Date: Fri, 01 Feb 2013 17:21:56 GMT
+Server: mindflayer
+</code></pre>
+
+<div class="highlight"><pre><span class="p">{</span>
+    <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 18:21:56 -0000"</span><span class="p">,</span>
+    <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"gsalluzzo"</span><span class="p">,</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0618640140"</span>
+<span class="p">}</span>
+</pre></div>
+
+<p>Let's see the books I voted:</p>
+
+<pre><code>$ curl -i http://localhost:5000/users/gsalluzzo/
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 223
+Date: Fri, 01 Feb 2013 17:22:55 GMT
+Server: mindflayer
+</code></pre>
+
+<div class="highlight"><pre><span class="p">[{</span>
+    <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
+    <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 18:03:16 -0000"</span><span class="p">,</span>
+    <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"gsalluzzo"</span><span class="p">,</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 18:21:56 -0000"</span><span class="p">,</span>
+    <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"gsalluzzo"</span><span class="p">,</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0618640140"</span>
+<span class="p">}]</span>
+</pre></div>
+
+<p>...and again all books voted:</p>
+
+<pre><code>$ curl -i http://localhost:5000/objects/
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 161
+Date: Fri, 01 Feb 2013 17:23:51 GMT
+Server: mindflayer
+</code></pre>
+
+<div class="highlight"><pre><span class="p">[{</span>
+    <span class="nt">"amount"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+    <span class="nt">"average"</span><span class="p">:</span> <span class="s2">"10.0"</span><span class="p">,</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0618640140"</span><span class="p">,</span>
+    <span class="nt">"votes_no"</span><span class="p">:</span> <span class="mi">1</span>
+<span class="p">},</span> <span class="p">{</span>
+    <span class="nt">"amount"</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
+    <span class="nt">"average"</span><span class="p">:</span> <span class="s2">"6.0"</span><span class="p">,</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
+    <span class="nt">"votes_no"</span><span class="p">:</span> <span class="mi">2</span>
+<span class="p">}]</span>
+</pre></div>
+
+<h2>Thanks to:</h2>
+
+<p><strong>Redis</strong> project at <a href="http://redis.io/">http://redis.io/</a></p>
+
+<p><strong>Flask</strong> project at <a href="http://flask.pocoo.org/">http://flask.pocoo.org/</a></p>
+
+<p><strong>Flask-RESTful</strong> project at <a href="https://github.com/twilio/flask-restful/">https://github.com/twilio/flask-restful/</a></p>
+
+<p><strong>CherryPy</strong> project at <a href="http://cherrypy.org/">http://cherrypy.org/</a> - if you wanna try it straight away without deploying it</p>
+
+<p><strong>Buongiorno S.p.A.</strong> -my company-, letting me open sources to the world.</p>
+
+<h2>LICENSE</h2>
+
+<p>The MIT License (MIT)</p>
+
+<p>Copyright (c) 2013 Buongiorno Spa</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Reding maintained by <a href="https://github.com/BuongiornoMIP">BuongiornoMIP</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
