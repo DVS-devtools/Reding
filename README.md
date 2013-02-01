@@ -7,10 +7,15 @@ Reding is a WSGI Python app made using the amazing Flask web framework, and one 
 
 On Redis side, it uses the powerful sorted set data type to provide all the functionalities.
 
+
 Thanks to:
+
 Redis project at http://redis.io/
+
 Flask project at http://flask.pocoo.org/
+
 Flask-RESTful project at https://github.com/twilio/flask-restful/
+
 CherryPy project at http://cherrypy.org/ - if you wanna try it straight away with a "python reding.py"
 
 
