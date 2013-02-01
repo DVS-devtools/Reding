@@ -4,9 +4,15 @@ Reding
 Rating on Redis - REST API on Flask
 -----------------------------------
 
-Reding is a *WSGI* Python app made using the amazing Flask web framework, and one of its extension, flask-restful.
+Reding is a *WSGI* Python app made using the amazing Flask web framework, and one of its extension, Flask-RESTful.
 
 On Redis side, it uses the powerful sorted set data type to provide all the functionalities.
+
+
+Some examples:
+--------------
+
+bla bla bla
 
 
 Thanks to:
