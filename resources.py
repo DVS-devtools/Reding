@@ -92,10 +92,15 @@ class ObjectList(restful.Resource):
                 '-inf',
                 '+inf',
             )
+
+            average = 0
+            if n:
+                average = a/n
+
             reply.append(
                 dict(
                     votes_no=n,
-                    average=a/n,
+                    average=average,
                     amount=a,
                     object_id=o,
                 )
@@ -347,7 +352,6 @@ class UserObject(restful.Resource):
             )
         )
 
-    @marshal_with(user_object_resource_fields)
     def delete(self, object_id, user_id):
         args = self.parser.parse_args()
 
