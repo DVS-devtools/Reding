@@ -191,7 +191,7 @@ Thanks to:
 
 **Flask-RESTful** project at https://github.com/twilio/flask-restful/
 
-**CherryPy** project at http://cherrypy.org/ - if you wanna try it straight away with a "python reding.py"
+**CherryPy** project at http://cherrypy.org/ - if you wanna try it straight away without deploying it
 
 **Buongiorno S.p.a.** -my company-, letting me open sources to the world.
 
