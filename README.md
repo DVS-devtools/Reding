@@ -20,6 +20,8 @@ Content-Type: application/json
 Content-Length: 2
 Date: Fri, 01 Feb 2013 16:50:47 GMT
 Server: mindflayer
+
+[]
 </pre>
 
 I wanna give a '10' to the amazing 'Core Python Applications Programming' book (ISBN-13: 978-0132678209):
