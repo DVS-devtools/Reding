@@ -86,7 +86,7 @@ Server: mindflayer
 [{"amount": 19, "average": "9.5", "object_id": "978-0132678209", "votes_no": 2}]
 </pre>
 
-There's only a book, what if I get only that one?
+There's only a book, what if I only get that one??
 <pre>
 $ curl -i http://localhost:5000/objects/978-0132678209/
 HTTP/1.1 200 OK
@@ -98,7 +98,7 @@ Server: mindflayer
 {"amount": 19, "average": "9.5", "object_id": "978-0132678209", "votes_no": 2}
 </pre>
 
-And what about having only my vote?
+Or if I only get my single vote?
 <pre>
 $ curl -i http://localhost:5000/objects/978-0132678209/users/gsalluzzo/
 HTTP/1.1 200 OK
