@@ -86,7 +86,7 @@ Server: mindflayer
 [{"amount": 19, "average": "9.5", "object_id": "978-0132678209", "votes_no": 2}]
 </pre>
 
-There's only a book, what if I get only it?
+There's only a book, what if I get only that one?
 <pre>
 $ curl -i http://localhost:5000/objects/978-0132678209/
 HTTP/1.1 200 OK
