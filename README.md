@@ -177,7 +177,7 @@ Date: Fri, 01 Feb 2013 17:23:51 GMT
 Server: mindflayer
 
 [{"amount": 10, "average": "10.0", "object_id": "978-0618640140", "votes_no": 1}, {"amount": 12, "average": "6.0", "object_id": "978-0132678209", "votes_no": 2}]
-<pre>
+</pre>
 
 
 Thanks to:
