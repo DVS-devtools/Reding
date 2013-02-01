@@ -17,7 +17,7 @@ api.add_resource(
 )
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    #app.run(debug=True)
     from cherrypy import wsgiserver
 
     w = wsgiserver.WSGIPathInfoDispatcher({'/': app.wsgi_app})
