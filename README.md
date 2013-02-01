@@ -162,8 +162,6 @@ Content-Length: 0
 Date: Fri, 01 Feb 2013 17:13:45 GMT
 Server: mindflayer
 ```
-```json
-```
 
 Let's enter my mom's vote, she does not like Python, she even doesn't know what it is...
 ```
