@@ -35,7 +35,7 @@ Server: mindflayer
 
 {"vote": 10, "when": "Fri, 01 Feb 2013 17:57:44 -0000", "user_id": "gsalluzzo", "object_id": "978-0132678209"}
 </pre>
-Ehy hackers, I've just used a PUT call, but yes, I know, it's the first vote, I should use a POST one. Reding maps POST method on the PUT one, so client does not need to know if it's the first time I'm voting this object.
+Ehy hackers, I've just used a PUT call, but yes, I know, it's the first vote, I should use a POST one. Reding maps POST method on the PUT one, so the client does not need to know if it's the first time I'm voting this object.
 
 OK, '10' is too much indeed, let's change it to '9', or the author will get crazy about that:
 <pre>
