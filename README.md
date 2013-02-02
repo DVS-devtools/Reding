@@ -275,15 +275,11 @@ What's missing?:
 Thanks to:
 ----------
 
-**Redis** project at http://redis.io/
-
-**Flask** project at http://flask.pocoo.org/
-
-**Flask-RESTful** project at https://github.com/twilio/flask-restful/
-
-**CherryPy** project at http://cherrypy.org/ - if you wanna try it right now!
-
-**Buongiorno S.p.A.** -my company-, letting me open sources to the world.
+* **Redis** project at http://redis.io/;
+* **Flask** project at http://flask.pocoo.org/;
+* **Flask-RESTful** project at https://github.com/twilio/flask-restful/;
+* **CherryPy** project at http://cherrypy.org/ - if you wanna try it right now!;
+* **Buongiorno S.p.A.** -my company-, letting me open sources to the world.
 
 
 LICENSE
