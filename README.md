@@ -264,6 +264,14 @@ Server: mindflayer
 ```
 
 
+What's missing?:
+----------------
+* Tests;
+* List pagination;
+* List sorting;
+* Vote validator (?).
+
+
 Thanks to:
 ----------
 
