@@ -264,7 +264,7 @@ Server: mindflayer
 ```
 
 
-What's missing?:
+What's missing:
 ----------------
 * Tests;
 * List pagination;
