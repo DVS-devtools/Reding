@@ -29,7 +29,7 @@ setup(
     version=version,
     author=author,
     author_email=email,
-    url='https://github.com/BuongiornoMIP/Reding',
+    url='http://buongiornomip.github.com/Reding/',
     maintainer=author,
     maintainer_email=email,
     description=description,
