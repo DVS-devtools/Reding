@@ -32,6 +32,7 @@ __doc__ = """
 
 if __name__ == '__main__':
     from reding.app import app
+    from reding.settings import DAEMON_CONFIG
     #app.run(debug=True)
     from cherrypy import wsgiserver
 
