@@ -33,7 +33,7 @@ __doc__ = """
 if __name__ == '__main__':
     from reding.app import app
     from reding.settings import DAEMON_CONFIG
-    #app.run(debug=True)
+    #app.run(debug=True); import sys; sys.exit()
     from cherrypy import wsgiserver
 
     w = wsgiserver.WSGIPathInfoDispatcher({'/': app.wsgi_app})

@@ -7,6 +7,10 @@ from datetime import datetime
 from reding.settings import KEY_CONFIG, rclient
 
 
+def add_vote_arg(parser):
+    parser.add_argument('vote', type=int, required=True, default=0)
+
+
 def add_config_args(parser):
     for k in KEY_CONFIG:
         parser.add_argument(k, type=str)
@@ -117,7 +121,7 @@ class Object(restful.Resource):
     def __init__(self):
         super(Object, self).__init__()
         add_config_args(self.parser)
-        self.parser.add_argument('vote', type=int)
+        add_vote_arg(self.parser)
 
     @marshal_with(object_resource_fields)
     def get(self, object_id):
@@ -264,7 +268,7 @@ class UserObject(restful.Resource):
     def __init__(self):
         super(UserObject, self).__init__()
         add_config_args(self.parser)
-        self.parser.add_argument('vote', type=int)
+        add_vote_arg(self.parser)
 
     @marshal_with(user_object_resource_fields)
     def get(self, object_id, user_id):
