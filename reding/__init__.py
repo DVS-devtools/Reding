@@ -1,5 +1,5 @@
 __author__ = 'Giorgio Salluzzo <giorgio.salluzzo@gmail.com>'
-__version__ = '0.1.2'
+__version__ = '0.1.3'
 __classifiers__ = [
     'Development Status :: 4 - Beta',
     'Intended Audience :: Developers',
