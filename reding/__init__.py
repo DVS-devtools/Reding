@@ -48,4 +48,6 @@ if __name__ == '__main__':
     try:
         server.start()
     except KeyboardInterrupt:
+        print('Shutting down Reding...')
+    finally:
         server.stop()
