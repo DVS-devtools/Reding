@@ -271,7 +271,7 @@ Server: mindflayer
 ```
 
 
-Filters (on GETs views):
+Filters (on GET's views):
 --------
 * *vote=* available on "/objects/<<string:object_id>>/" and "/objects/<<string:object_id>>/users/" interfaces.
 
