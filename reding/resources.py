@@ -99,7 +99,7 @@ class VotedListResource(restful.Resource):
 
             average = 0
             if n:
-                average = a/n
+                average = a / n
 
             reply.append(
                 dict(
@@ -154,9 +154,9 @@ class VotedSummaryResource(restful.Resource):
             amount = 0
         elif vote:
             average = vote
-            amount = vote*number
+            amount = vote * number
         else:
-            average = amount/number
+            average = amount / number
 
         return (
             dict(
