@@ -7,8 +7,8 @@ from datetime import datetime
 from reding.settings import KEY_CONFIG, rclient
 
 
-def add_vote_arg(parser):
-    parser.add_argument('vote', type=int, required=True, default=0)
+def add_vote_arg(parser, required=False):
+    parser.add_argument('vote', type=int, required=required, default=0)
 
 
 def add_config_args(parser):
@@ -176,18 +176,27 @@ class VotingUserListResource(restful.Resource):
     def __init__(self):
         super(VotingUserListResource, self).__init__()
         add_config_args(self.parser)
+        add_vote_arg(self.parser)
 
     @marshal_with(user_object_resource_fields)
     def get(self, object_id):
         args = self.parser.parse_args()
+
+        vote = args['vote']
+
+        min = '-inf'
+        max = '+inf'
+        if vote:
+            min = vote
+            max = vote
 
         votes = self.redis.zrangebyscore(
             get_user_object_key_name(
                 object_id=object_id,
                 **args
             ),
-            '-inf',
-            '+inf',
+            min,
+            max,
             withscores=True,
         )
 
@@ -268,7 +277,6 @@ class VoteSummaryResource(restful.Resource):
     def __init__(self):
         super(VoteSummaryResource, self).__init__()
         add_config_args(self.parser)
-        add_vote_arg(self.parser)
 
     @marshal_with(user_object_resource_fields)
     def get(self, object_id, user_id):
@@ -311,6 +319,7 @@ class VoteSummaryResource(restful.Resource):
 
     @marshal_with(user_object_resource_fields)
     def put(self, object_id, user_id):
+        add_vote_arg(self.parser, required=True)
         args = self.parser.parse_args()
 
         next_vote = args['vote']
