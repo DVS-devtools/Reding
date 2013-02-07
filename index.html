@@ -69,7 +69,7 @@ Server: mindflayer
 
 <p>I wanna give a '10' to the amazing 'Core Python Applications Programming' book (ISBN-13: 978-0132678209):</p>
 
-<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/?vote=10
+<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/ -d "vote=10"
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 110
@@ -89,7 +89,7 @@ Server: mindflayer
 
 <p>OK, '10' is too much indeed, let's change it to '9', or the author will get crazy about that:</p>
 
-<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/?vote=9
+<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/ -d "vote=9"
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 109
@@ -125,7 +125,7 @@ Server: mindflayer
 
 <p>Not expected... ;) Let's enter another vote:</p>
 
-<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/wchun/?vote=10
+<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/wchun/ -d "vote=10"
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 106
@@ -179,7 +179,7 @@ Server: mindflayer
 <span class="p">}</span>
 </pre></div>
 
-<p>Or if I only get my single vote?</p>
+<p>Or what if I only get my single vote?</p>
 
 <pre><code>$ curl -i http://localhost:5000/objects/978-0132678209/users/gsalluzzo/
 HTTP/1.1 200 OK
@@ -209,7 +209,7 @@ Server: mindflayer
 
 <p>Let's enter my mom's vote, she does not like Python, she even doesn't know what it is...</p>
 
-<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/mymom/?vote=3
+<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/mymom/ -d "vote=3"
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 105
@@ -245,7 +245,7 @@ Server: mindflayer
 
 <p>Well, stop programming books...I'm gonna give a '10' to the amazing 'The Lord of the Rings Sketchbook':</p>
 
-<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0618640140/users/gsalluzzo/?vote=10
+<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0618640140/users/gsalluzzo/ -d "vote=10"
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 110
@@ -307,7 +307,12 @@ Server: mindflayer
 <span class="p">}]</span>
 </pre></div>
 
-<h2>What's missing:</h2>
+<h2>Filters (on GETs views):</h2>
+
+<ul>
+<li>
+<em>vote=</em> available on "/objects/&lt;<a>string:object_id</a>&gt;/" and "/objects/&lt;<a>string:object_id</a>&gt;/users/" interfaces.</li>
+</ul><h2>What's missing:</h2>
 
 <ul>
 <li>Tests;</li>
