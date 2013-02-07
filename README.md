@@ -34,7 +34,7 @@ Server: mindflayer
 
 I wanna give a '10' to the amazing 'Core Python Applications Programming' book (ISBN-13: 978-0132678209):
 ```
-$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/?vote=10
+$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/ -d "vote=10"
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 110
@@ -53,7 +53,7 @@ Ehy hackers, I've just used a PUT call, but yes, I know, it's the first vote, I 
 
 OK, '10' is too much indeed, let's change it to '9', or the author will get crazy about that:
 ```
-$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/?vote=9
+$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/ -d "vote=9"
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 109
@@ -89,7 +89,7 @@ Server: mindflayer
 
 Not expected... ;) Let's enter another vote:
 ```
-$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/wchun/?vote=10
+$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/wchun/ -d "vote=10"
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 106
@@ -142,7 +142,7 @@ Server: mindflayer
 }
 ```
 
-Or if I only get my single vote?
+Or what if I only get my single vote?
 ```
 $ curl -i http://localhost:5000/objects/978-0132678209/users/gsalluzzo/
 HTTP/1.1 200 OK
@@ -172,7 +172,7 @@ Server: mindflayer
 
 Let's enter my mom's vote, she does not like Python, she even doesn't know what it is...
 ```
-$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/mymom/?vote=3
+$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/mymom/ -d "vote=3"
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 105
@@ -208,7 +208,7 @@ Server: mindflayer
 
 Well, stop programming books...I'm gonna give a '10' to the amazing 'The Lord of the Rings Sketchbook':
 ```
-$ curl -i -XPUT http://localhost:5000/objects/978-0618640140/users/gsalluzzo/?vote=10
+$ curl -i -XPUT http://localhost:5000/objects/978-0618640140/users/gsalluzzo/ -d "vote=10"
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 110
@@ -269,6 +269,11 @@ Server: mindflayer
     "votes_no": 2
 }]
 ```
+
+
+Filters (on GET's views):
+--------
+* *vote=* available on "/objects/<<string:object_id>>/" and "/objects/<<string:object_id>>/users/" interfaces.
 
 
 What's missing:
