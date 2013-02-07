@@ -402,4 +402,10 @@ class VoteSummaryResource(restful.Resource):
                 correction,
             )
 
-__all__ = (VotedSummaryResource, VotedListResource, VotingUserListResource, VoteSummaryResource, UserSummaryResource)
+__all__ = (
+    VotedSummaryResource,
+    VotedListResource,
+    VotingUserListResource,
+    VoteSummaryResource,
+    UserSummaryResource
+)
