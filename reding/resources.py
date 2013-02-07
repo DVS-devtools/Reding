@@ -121,10 +121,10 @@ class VotedSummaryResource(restful.Resource):
     def __init__(self):
         super(VotedSummaryResource, self).__init__()
         add_config_args(self.parser)
-        add_vote_arg(self.parser)
 
     @marshal_with(object_resource_fields)
     def get(self, object_id):
+        add_vote_arg(self.parser)
         args = self.parser.parse_args()
 
         vote = args['vote']
@@ -176,10 +176,10 @@ class VotingUserListResource(restful.Resource):
     def __init__(self):
         super(VotingUserListResource, self).__init__()
         add_config_args(self.parser)
-        add_vote_arg(self.parser)
 
     @marshal_with(user_object_resource_fields)
     def get(self, object_id):
+        add_vote_arg(self.parser)
         args = self.parser.parse_args()
 
         vote = args['vote']
