@@ -69,13 +69,13 @@ user_object_resource_fields = {
 }
 
 
-class ObjectList(restful.Resource):
+class VotedListResource(restful.Resource):
 
     redis = rclient
     parser = reqparse.RequestParser()
 
     def __init__(self):
-        super(ObjectList, self).__init__()
+        super(VotedListResource, self).__init__()
         add_config_args(self.parser)
 
     @marshal_with(object_resource_fields)
@@ -113,13 +113,13 @@ class ObjectList(restful.Resource):
         return reply
 
 
-class Object(restful.Resource):
+class VotedSummaryResource(restful.Resource):
 
     redis = rclient
     parser = reqparse.RequestParser()
 
     def __init__(self):
-        super(Object, self).__init__()
+        super(VotedSummaryResource, self).__init__()
         add_config_args(self.parser)
         add_vote_arg(self.parser)
 
@@ -168,13 +168,13 @@ class Object(restful.Resource):
         )
 
 
-class ObjectUsers(restful.Resource):
+class VotingUserListResource(restful.Resource):
 
     redis = rclient
     parser = reqparse.RequestParser()
 
     def __init__(self):
-        super(ObjectUsers, self).__init__()
+        super(VotingUserListResource, self).__init__()
         add_config_args(self.parser)
 
     @marshal_with(user_object_resource_fields)
@@ -211,13 +211,13 @@ class ObjectUsers(restful.Resource):
         return reply
 
 
-class UserList(restful.Resource):
+class UserSummaryResource(restful.Resource):
 
     redis = rclient
     parser = reqparse.RequestParser()
 
     def __init__(self):
-        super(UserList, self).__init__()
+        super(UserSummaryResource, self).__init__()
         add_config_args(self.parser)
 
     @marshal_with(user_object_resource_fields)
@@ -260,13 +260,13 @@ class UserList(restful.Resource):
         return reply
 
 
-class UserObject(restful.Resource):
+class VoteSummaryResource(restful.Resource):
 
     redis = rclient
     parser = reqparse.RequestParser()
 
     def __init__(self):
-        super(UserObject, self).__init__()
+        super(VoteSummaryResource, self).__init__()
         add_config_args(self.parser)
         add_vote_arg(self.parser)
 
@@ -402,4 +402,4 @@ class UserObject(restful.Resource):
                 correction,
             )
 
-__all__ = (Object, ObjectList, ObjectUsers, UserObject, UserList)
+__all__ = (VotedSummaryResource, VotedListResource, VotingUserListResource, VoteSummaryResource, UserSummaryResource)
