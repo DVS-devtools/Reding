@@ -51,3 +51,4 @@ if __name__ == '__main__':
         print('Shutting down Reding...')
     finally:
         server.stop()
+        print('Done.')
