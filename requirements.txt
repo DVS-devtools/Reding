@@ -4,7 +4,13 @@ Flask-RESTful==0.1.5
 Jinja2==2.6
 Werkzeug==0.8.3
 argparse==1.2.1
+cov-core==1.7
+coverage==3.6
 distribute==0.6.24
+execnet==1.1
+pep8==1.4.1
+py==1.4.12
 pycrypto==2.6
 redis==2.7.2
+six==1.2.0
 wsgiref==0.1.2

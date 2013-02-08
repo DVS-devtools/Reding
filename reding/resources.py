@@ -72,10 +72,11 @@ user_object_resource_fields = {
 class VotedListResource(restful.Resource):
 
     redis = rclient
-    parser = reqparse.RequestParser()
+    parser_cls = reqparse.RequestParser
 
     def __init__(self):
         super(VotedListResource, self).__init__()
+        parser_cls = reqparse.RequestParser
         add_config_args(self.parser)
 
     @marshal_with(object_resource_fields)
@@ -116,10 +117,11 @@ class VotedListResource(restful.Resource):
 class VotedSummaryResource(restful.Resource):
 
     redis = rclient
-    parser = reqparse.RequestParser()
+    parser_cls = reqparse.RequestParser
 
     def __init__(self):
         super(VotedSummaryResource, self).__init__()
+        parser_cls = reqparse.RequestParser
         add_config_args(self.parser)
 
     @marshal_with(object_resource_fields)
@@ -171,10 +173,11 @@ class VotedSummaryResource(restful.Resource):
 class VotingUserListResource(restful.Resource):
 
     redis = rclient
-    parser = reqparse.RequestParser()
+    parser_cls = reqparse.RequestParser
 
     def __init__(self):
         super(VotingUserListResource, self).__init__()
+        parser_cls = reqparse.RequestParser
         add_config_args(self.parser)
 
     @marshal_with(user_object_resource_fields)
@@ -223,10 +226,11 @@ class VotingUserListResource(restful.Resource):
 class UserSummaryResource(restful.Resource):
 
     redis = rclient
-    parser = reqparse.RequestParser()
+    parser_cls = reqparse.RequestParser
 
     def __init__(self):
         super(UserSummaryResource, self).__init__()
+        self.parser = self.parser_cls()
         add_config_args(self.parser)
 
     @marshal_with(user_object_resource_fields)
@@ -272,10 +276,11 @@ class UserSummaryResource(restful.Resource):
 class VoteSummaryResource(restful.Resource):
 
     redis = rclient
-    parser = reqparse.RequestParser()
+    parser_cls = reqparse.RequestParser
 
     def __init__(self):
         super(VoteSummaryResource, self).__init__()
+        self.parser = self.parser_cls()
         add_config_args(self.parser)
 
     @marshal_with(user_object_resource_fields)
