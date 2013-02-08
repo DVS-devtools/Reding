@@ -2,3 +2,4 @@ dist/
 Reding.egg-info/
 *pyc
 .cache/
+VENV/

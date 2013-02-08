@@ -76,7 +76,7 @@ class VotedListResource(restful.Resource):
 
     def __init__(self):
         super(VotedListResource, self).__init__()
-        parser_cls = reqparse.RequestParser
+        self.parser = self.parser_cls()
         add_config_args(self.parser)
 
     @marshal_with(object_resource_fields)
@@ -121,7 +121,7 @@ class VotedSummaryResource(restful.Resource):
 
     def __init__(self):
         super(VotedSummaryResource, self).__init__()
-        parser_cls = reqparse.RequestParser
+        self.parser = self.parser_cls()
         add_config_args(self.parser)
 
     @marshal_with(object_resource_fields)
@@ -177,7 +177,7 @@ class VotingUserListResource(restful.Resource):
 
     def __init__(self):
         super(VotingUserListResource, self).__init__()
-        parser_cls = reqparse.RequestParser
+        self.parser = self.parser_cls()
         add_config_args(self.parser)
 
     @marshal_with(user_object_resource_fields)
