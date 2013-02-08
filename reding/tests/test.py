@@ -59,6 +59,7 @@ import redis
 'www_authenticate'
 """
 
+
 class RedingTestCase(unittest.TestCase):
 
     def setUp(self):
@@ -79,7 +80,7 @@ class RedingTestCase(unittest.TestCase):
         return r
 
     def test_voted_list_resource_empty(self):
-        response =  self._test_get('/objects/')
+        response = self._test_get('/objects/')
         self.assertEqual(json.loads(response.data), [])
 
     def test_vote_summary_resource_first(self):
@@ -89,7 +90,7 @@ class RedingTestCase(unittest.TestCase):
         }
         headers = []
         data = dict(vote=10)
-        response =  self._test_post(
+        response = self._test_post(
             '/objects/{object_id}/users/{user_id}/'.format(**url_parts),
             headers,
             data
