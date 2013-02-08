@@ -254,7 +254,3 @@ class RedingDocumentationTestCase(unittest.TestCase):
             }
         ]
         self.assertEqual(json.loads(response.data), expected)
-
-
-if __name__ == '__main__':
-    unittest.main()
