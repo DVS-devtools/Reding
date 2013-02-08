@@ -7,4 +7,4 @@ install:
 before_script:
   - pip install -r test_requirements.txt --use-mirrors
 script:
-  - py.test --doctest-modules --pep8 reding -v
+  - py.test --doctest-modules --pep8 reding -v --cov reding --cov-report term-missing

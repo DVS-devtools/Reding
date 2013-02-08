@@ -136,19 +136,19 @@ class VotedSummaryResource(restful.Resource):
             object_id,
         )
 
-        min = '-inf'
-        max = '+inf'
+        min_vote = '-inf'
+        max_vote = '+inf'
         if vote:
-            min = vote
-            max = vote
+            min_vote = vote
+            max_vote = vote
 
         number = self.redis.zcount(
             get_user_object_key_name(
                 object_id=object_id,
                 **args
             ),
-            min,
-            max,
+            min_vote,
+            max_vote,
         )
 
         if not number:
@@ -187,19 +187,19 @@ class VotingUserListResource(restful.Resource):
 
         vote = args['vote']
 
-        min = '-inf'
-        max = '+inf'
+        min_vote = '-inf'
+        max_vote = '+inf'
         if vote:
-            min = vote
-            max = vote
+            min_vote = vote
+            max_vote = vote
 
         votes = self.redis.zrangebyscore(
             get_user_object_key_name(
                 object_id=object_id,
                 **args
             ),
-            min,
-            max,
+            min_vote,
+            max_vote,
             withscores=True,
         )
 

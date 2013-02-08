@@ -2,4 +2,5 @@ dist/
 Reding.egg-info/
 *pyc
 .cache/
+.coverage
 VENV/
