@@ -46,7 +46,7 @@ class RedingDocumentationTestCase(unittest.TestCase):
         self.user_vote_dates.setdefault(user_id, {})
         self.user_vote_dates[user_id][object_id] = resp['when']
         dt = dtparser.parse(resp['when'])
-        self.assertLessEqual(now, dt)
+        self.assertEqual(type(dt), datetime)
 
     def test_00_voted_list_resource_empty(self):
         self.redis.flushdb()
