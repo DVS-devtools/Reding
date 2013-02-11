@@ -1,7 +1,7 @@
 __author__ = 'Giorgio Salluzzo <giorgio.salluzzo@gmail.com>'
-__version__ = '0.3.0'
+__version__ = '1.0'
 __classifiers__ = [
-    'Development Status :: 4 - Beta',
+    'Development Status :: 5 - Production/Stable',
     'Intended Audience :: Developers',
     'License :: OSI Approved :: MIT License',
     'Operating System :: OS Independent',
