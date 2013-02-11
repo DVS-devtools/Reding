@@ -1,4 +1,4 @@
-from utils.app import app
+from reding.app import app
 
 import unittest
 import json

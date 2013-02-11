@@ -4,3 +4,4 @@ pytest-cov==1.6
 pytest-pep8==1.0.4
 python-dateutil==2.1
 pytz==2012j
+python-coveralls

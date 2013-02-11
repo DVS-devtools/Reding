@@ -1,52 +1,9 @@
-from reding.app import app
-import unittest
+from reding.tests.utils import RedingTestCase
+
 import json
-import redis
-from datetime import datetime
-from dateutil import parser as dtparser
-import pytz
 
 
-class RedingDocumentationTestCase(unittest.TestCase):
-
-    user_vote_dates = {}
-
-    def setUp(self):
-        self.app = app.test_client()
-        self.redis = redis.StrictRedis()
-
-    def assert_get(self, url):
-        r = self.app.get(url)
-        self.assertEqual(r.status_code, 200, msg=r.data)
-        self.assertEqual(r.mimetype, 'application/json')
-        return r
-
-    def assert_delete(self, url):
-        r = self.app.delete(url)
-        self.assertEqual(r.status_code, 204, msg=r.data)
-        self.assertEqual(r.mimetype, 'application/json')
-        self.assertFalse(r.data)
-        return r
-
-    def assert_post_or_put(self, url, headers, data, put=False):
-        if not put:
-            r = self.app.post(url, headers=headers, data=data)
-        else:
-            r = self.app.put(url, headers=headers, data=data)
-        self.assertEqual(r.status_code, 200)
-        self.assertEqual(r.mimetype, 'application/json')
-        return r
-
-    def _check_post(self, response, object_id, user_id, vote):
-        now = datetime.utcnow().replace(tzinfo=pytz.utc)
-        resp = json.loads(response.data)
-        self.assertEqual(resp['object_id'], object_id)
-        self.assertEqual(resp['user_id'], user_id)
-        self.assertEqual(resp['vote'], vote)
-        self.user_vote_dates.setdefault(user_id, {})
-        self.user_vote_dates[user_id][object_id] = resp['when']
-        dt = dtparser.parse(resp['when'])
-        self.assertEqual(type(dt), datetime)
+class RedingDocumentationTestCase(RedingTestCase):
 
     def test_00_voted_list_resource_empty(self):
         self.redis.flushdb()
@@ -192,7 +149,33 @@ class RedingDocumentationTestCase(unittest.TestCase):
             u"amount": 12,
             u"average": u"6.0",
             u"object_id": url_parts[u'object_id'],
-            u"votes_no": 2
+            u"votes_no": 2,
+        }
+        self.assertEqual(json.loads(response.data), expected)
+
+    def test_10_voted_list_resource_check_votes_with_hit_filter(self):
+        url_parts = {
+            u'object_id': u'978-0132678209',
+        }
+        response = self.assert_get('/objects/{object_id}/?vote=3'.format(**url_parts))
+        expected = {
+            u"amount": 3,
+            u"average": u"3.0",
+            u"object_id": url_parts[u'object_id'],
+            u"votes_no": 1,
+        }
+        self.assertEqual(json.loads(response.data), expected)
+
+    def test_10_voted_list_resource_check_votes_with_miss_filter(self):
+        url_parts = {
+            u'object_id': u'978-0132678209',
+        }
+        response = self.assert_get('/objects/{object_id}/?vote=1'.format(**url_parts))
+        expected = {
+            u"amount": 0,
+            u"average": u"0.0",
+            u"object_id": url_parts[u'object_id'],
+            u"votes_no": 0,
         }
         self.assertEqual(json.loads(response.data), expected)
 
@@ -253,4 +236,25 @@ class RedingDocumentationTestCase(unittest.TestCase):
                 u"votes_no": 2,
             }
         ]
+        self.assertEqual(json.loads(response.data), expected)
+
+    def test_14_user_list_resource(self):
+        user_id = u'gsalluzzo'
+        object_id = u'978-0618640140'
+        response = self.assert_get('/objects/{object_id}/users/'.format(object_id=object_id))
+        expected = [
+            {
+                u'vote': 10,
+                u'user_id': user_id,
+                u'when': self.user_vote_dates[user_id][object_id],
+                u'object_id': object_id,
+            }
+        ]
+        self.assertEqual(json.loads(response.data), expected)
+
+        response = self.assert_get('/objects/{object_id}/users/?vote=10'.format(object_id=object_id))
+        self.assertEqual(json.loads(response.data), expected)
+
+        response = self.assert_get('/objects/{object_id}/users/?vote=1'.format(object_id=object_id))
+        expected = []
         self.assertEqual(json.loads(response.data), expected)

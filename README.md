@@ -2,6 +2,7 @@ Reding
 ======
 
 [![Build Status](https://secure.travis-ci.org/BuongiornoMIP/Reding.png?branch=master)](https://travis-ci.org/BuongiornoMIP/Reding)
+[![Coverage Status](https://coveralls.io/repos/BuongiornoMIP/Reding/badge.png?branch=master)](https://coveralls.io/r/BuongiornoMIP/Reding)
 
 Rating on Redis - REST API on Flask
 -----------------------------------

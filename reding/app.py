@@ -1,9 +1,9 @@
+from reding.settings import DAEMON_CONFIG
+from reding.resources import VotedListResource, \
+    VotingUserListResource, VotedSummaryResource, UserSummaryResource, VoteSummaryResource
+
 from flask import Flask
 from flask.ext import restful
-
-from reding.settings import DAEMON_CONFIG
-from reding.resources import VotedListResource,\
-    VotingUserListResource, VotedSummaryResource, UserSummaryResource, VoteSummaryResource
 
 app = Flask(__name__)
 api = restful.Api(app)
