@@ -6,7 +6,6 @@ Reding
 
 Rating on Redis - REST API on Flask
 -----------------------------------
-
 Reding is a *WSGI* Python app made using the amazing Flask web framework, and one of its extension, Flask-RESTful.
 
 On Redis side, it uses the powerful sorted set data type to provide all the functionalities.
@@ -21,7 +20,6 @@ pip install Reding
 
 Some examples:
 --------------
-
 Let's start, my Reding is empty, no book has been voted:
 ```
 $ curl -i http://localhost:5000/objects/
@@ -281,7 +279,6 @@ Filters (on GET's views):
 
 What's missing:
 ----------------
-* Tests;
 * List pagination;
 * List sorting;
 * Vote validator (?).
@@ -289,7 +286,6 @@ What's missing:
 
 Thanks to:
 ----------
-
 * **Redis** project at http://redis.io/;
 * **Flask** project at http://flask.pocoo.org/;
 * **Flask-RESTful** project at https://github.com/twilio/flask-restful/;
@@ -299,7 +295,6 @@ Thanks to:
 
 LICENSE
 -------
-
 The MIT License (MIT)
 
 Copyright (c) 2013 Buongiorno Spa
