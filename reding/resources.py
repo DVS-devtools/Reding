@@ -1,10 +1,10 @@
+from reding.settings import KEY_CONFIG, rclient
+
 from flask.ext.restful import reqparse, fields, marshal_with, abort
 from flask.ext import restful
 
 from time import time
 from datetime import datetime
-
-from reding.settings import KEY_CONFIG, rclient
 
 
 def add_vote_arg(parser, required=False):
@@ -69,15 +69,18 @@ user_object_resource_fields = {
 }
 
 
-class VotedListResource(restful.Resource):
+class RedingResource(restful.Resource):
 
     redis = rclient
     parser_cls = reqparse.RequestParser
 
     def __init__(self):
-        super(VotedListResource, self).__init__()
+        super(RedingResource, self).__init__()
         self.parser = self.parser_cls()
         add_config_args(self.parser)
+
+
+class VotedListResource(RedingResource):
 
     @marshal_with(object_resource_fields)
     def get(self):
@@ -114,15 +117,7 @@ class VotedListResource(restful.Resource):
         return reply
 
 
-class VotedSummaryResource(restful.Resource):
-
-    redis = rclient
-    parser_cls = reqparse.RequestParser
-
-    def __init__(self):
-        super(VotedSummaryResource, self).__init__()
-        self.parser = self.parser_cls()
-        add_config_args(self.parser)
+class VotedSummaryResource(RedingResource):
 
     @marshal_with(object_resource_fields)
     def get(self, object_id):
@@ -170,15 +165,7 @@ class VotedSummaryResource(restful.Resource):
         )
 
 
-class VotingUserListResource(restful.Resource):
-
-    redis = rclient
-    parser_cls = reqparse.RequestParser
-
-    def __init__(self):
-        super(VotingUserListResource, self).__init__()
-        self.parser = self.parser_cls()
-        add_config_args(self.parser)
+class VotingUserListResource(RedingResource):
 
     @marshal_with(user_object_resource_fields)
     def get(self, object_id):
@@ -223,15 +210,7 @@ class VotingUserListResource(restful.Resource):
         return reply
 
 
-class UserSummaryResource(restful.Resource):
-
-    redis = rclient
-    parser_cls = reqparse.RequestParser
-
-    def __init__(self):
-        super(UserSummaryResource, self).__init__()
-        self.parser = self.parser_cls()
-        add_config_args(self.parser)
+class UserSummaryResource(RedingResource):
 
     @marshal_with(user_object_resource_fields)
     def get(self, user_id):
@@ -273,15 +252,7 @@ class UserSummaryResource(restful.Resource):
         return reply
 
 
-class VoteSummaryResource(restful.Resource):
-
-    redis = rclient
-    parser_cls = reqparse.RequestParser
-
-    def __init__(self):
-        super(VoteSummaryResource, self).__init__()
-        self.parser = self.parser_cls()
-        add_config_args(self.parser)
+class VoteSummaryResource(RedingResource):
 
     @marshal_with(user_object_resource_fields)
     def get(self, object_id, user_id):
