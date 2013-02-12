@@ -1,4 +1,3 @@
-from reding.settings import DAEMON_CONFIG
 from reding.resources import VotedListResource, \
     VotingUserListResource, VotedSummaryResource, UserSummaryResource, VoteSummaryResource
 
