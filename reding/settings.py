@@ -27,7 +27,7 @@ rtest_client = redis.StrictRedis(**TEST_REDIS_CONFIG)
 
 DAEMON_CONFIG = {
     'host': os.getenv('REDING_DAEMON_HOST', '0.0.0.0'),
-    'port': int(os.getenv('REDING_DAEMON_HOST', 5000)),
+    'port': int(os.getenv('REDING_DAEMON_PORT', 5000)),
 }
 
 KEY_CONFIG = {
