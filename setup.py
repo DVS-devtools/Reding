@@ -16,7 +16,7 @@ version = pkg.__version__
 classifiers = pkg.__classifiers__
 
 readme = open(os.path.join(wd, 'README.md'),'r').readlines()
-description = readme[3]
+description = readme[4]
 long_description = ''.join(readme)
 
 try:
