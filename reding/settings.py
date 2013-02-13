@@ -1,11 +1,19 @@
 import redis
 
+import os
+
 REDIS_CONFIG = {
-    'host': 'localhost',
-    'port': 6379,
+    'host': os.getenv('REDING_REDIS_HOST', 'localhost'),
+    'port': int(os.getenv('REDING_REDIS_PORT', 6379)),
+}
+
+TEST_REDIS_CONFIG = {
+    'host': os.getenv('REDING_TEST_REDIS_HOST', 'localhost'),
+    'port': int(os.getenv('REDING_TEST_REDIS_PORT', 6379)),
 }
 
 rclient = redis.StrictRedis(**REDIS_CONFIG)
+rtest_client = redis.StrictRedis(**TEST_REDIS_CONFIG)
 
 # TODO: add nydus
 # from nydus.db import create_cluster
@@ -18,8 +26,8 @@ rclient = redis.StrictRedis(**REDIS_CONFIG)
 #})
 
 DAEMON_CONFIG = {
-    'host': '0.0.0.0',
-    'port': 5000,
+    'host': os.getenv('REDING_DAEMON_HOST', '0.0.0.0'),
+    'port': int(os.getenv('REDING_DAEMON_HOST', 5000)),
 }
 
 KEY_CONFIG = {

@@ -1,4 +1,5 @@
 from reding.app import app
+from reding.settings import rtest_client
 
 import unittest
 import json
@@ -14,7 +15,7 @@ class RedingTestCase(unittest.TestCase):
 
     def setUp(self):
         self.app = app.test_client()
-        self.redis = redis.StrictRedis()
+        self.redis = rtest_client
 
     def assert_get(self, url):
         r = self.app.get(url)
