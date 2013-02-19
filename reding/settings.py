@@ -5,11 +5,13 @@ import os
 REDIS_CONFIG = {
     'host': os.getenv('REDING_REDIS_HOST', 'localhost'),
     'port': int(os.getenv('REDING_REDIS_PORT', 6379)),
+    'db': int(os.getenv('REDING_REDIS_DB', 0)),
 }
 
 TEST_REDIS_CONFIG = {
     'host': os.getenv('REDING_TEST_REDIS_HOST', 'localhost'),
     'port': int(os.getenv('REDING_TEST_REDIS_PORT', 6379)),
+    'db': int(os.getenv('REDING_TEST_REDIS_DB', 16)),
 }
 
 rclient = redis.StrictRedis(**REDIS_CONFIG)
