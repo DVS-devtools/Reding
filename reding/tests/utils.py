@@ -1,5 +1,5 @@
 from reding.app import app
-from reding.settings import rtest_client
+from reding.settings import rclient
 
 import unittest
 import json
@@ -13,9 +13,10 @@ class RedingTestCase(unittest.TestCase):
 
     user_vote_dates = {}
 
-    def setUp(self):
+    def __init__(self, methodName='runTest'):
+        super(RedingTestCase, self).__init__(methodName)
         self.app = app.test_client()
-        self.redis = rtest_client
+        self.redis = rclient
 
     def assert_get(self, url):
         r = self.app.get(url)

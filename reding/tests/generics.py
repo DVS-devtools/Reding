@@ -1,7 +1,4 @@
 from reding.tests.utils import RedingTestCase
-from reding.app import app
-
-import redis
 
 
 class GenericTestCase(RedingTestCase):

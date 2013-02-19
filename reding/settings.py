@@ -14,8 +14,10 @@ TEST_REDIS_CONFIG = {
     'db': int(os.getenv('REDING_TEST_REDIS_DB', 15)),
 }
 
-rclient = redis.StrictRedis(**REDIS_CONFIG)
-rtest_client = redis.StrictRedis(**TEST_REDIS_CONFIG)
+if 'unittest' in globals():
+    rclient = redis.StrictRedis(**TEST_REDIS_CONFIG)
+else:
+    rclient = redis.StrictRedis(**REDIS_CONFIG)
 
 # TODO: add nydus
 # from nydus.db import create_cluster
