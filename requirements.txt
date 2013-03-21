@@ -1,6 +1,6 @@
 CherryPy==3.2.2
 Flask==0.9
-Flask-RESTful==0.1.5
+Flask-RESTful==0.1.6
 Jinja2==2.6
 Werkzeug==0.8.3
 argparse==1.2.1
