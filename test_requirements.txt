@@ -1,7 +1,7 @@
-pytest==2.3.4
-pytest-cache==0.9
-pytest-cov==1.6
-pytest-pep8==1.0.4
-python-dateutil==2.1
-pytz==2012j
+pytest
+pytest-cache
+pytest-cov
+pytest-pep8
+python-dateutil
+pytz
 python-coveralls
