@@ -49,11 +49,6 @@ def get_key_name(template, **kw):
     return template.format(**d)
 
 
-# TODO: add tests, need 404?
-# def abort_if_todo_doesnt_exist(todo_id):
-    #if todo_id not in TODOS:
-        #abort(404, message="Todo {} doesn't exist".format(todo_id))
-
 object_resource_fields = {
     'votes_no': fields.Integer,
     'amount': fields.Integer,
@@ -81,6 +76,10 @@ class RedingResource(restful.Resource):
 
 
 class VotedListResource(RedingResource):
+
+    def __init__(self):
+        super(VotedListResource, self).__init__()
+        self.parser.add_argument('object_id', type=str, action='append')
 
     @marshal_with(object_resource_fields)
     def get(self):
@@ -115,6 +114,33 @@ class VotedListResource(RedingResource):
             )
 
         return reply
+
+    def post(self):
+        """
+        It sorts a list of 'object_id' with their amount of votes and returns it,
+        objects not rated are at the end of the list
+        :return: list
+        """
+        args = self.parser.parse_args()
+
+        objects = args['object_id']
+
+        if not objects:
+            return []
+
+        tmp_key = '{0}:tmp:{1}'.format(get_object_key_name(), int(time()))
+        tmp_dest_key = '{0}:tmp_dest:{1}'.format(get_object_key_name(), int(time()))
+
+        self.redis.sadd(tmp_key, *objects)
+        self.redis.zinterstore(tmp_dest_key, (get_object_key_name(), tmp_key), aggregate='SUM')
+        sorted = self.redis.zrevrangebyscore(tmp_dest_key, '+inf', '-inf')
+
+        self.redis.delete(tmp_key, tmp_dest_key)
+
+        sorted_set = set(sorted)
+        object_set = set(objects)
+
+        return sorted + list(object_set.difference(sorted_set))
 
 
 class VotedSummaryResource(RedingResource):
