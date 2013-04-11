@@ -172,6 +172,8 @@ class VotedSummaryResource(RedingResource):
             max_vote,
         )
 
+        if not amount:
+            amount = 0  # FIXME can test this line with a single vote=0 to a new object
         if not number:
             average = 0
             amount = 0
