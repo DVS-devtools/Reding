@@ -80,15 +80,31 @@ class VotedListResource(RedingResource):
     def __init__(self):
         super(VotedListResource, self).__init__()
         self.parser.add_argument('object_id', type=str, action='append')
+        self.parser.add_argument('sort', type=str, default='+')
 
     @marshal_with(object_resource_fields)
     def get(self):
-        amounts = self.redis.zrangebyscore(
-            get_object_key_name(),
-            '-inf',
-            '+inf',
-            withscores=True,
-        )
+        args = self.parser.parse_args()
+
+        sort = '+'
+        if args['sort'] in ('-', '+'):
+            if args['sort'] == '-':
+                sort = '-'
+
+        if sort == '+':
+            amounts = self.redis.zrangebyscore(
+                get_object_key_name(),
+                '-inf',
+                '+inf',
+                withscores=True,
+            )
+        else:
+            amounts = self.redis.zrevrangebyscore(
+                get_object_key_name(),
+                '+inf',
+                '-inf',
+                withscores=True,
+            )
 
         reply = []
         for o, a in amounts:
@@ -123,6 +139,11 @@ class VotedListResource(RedingResource):
         """
         args = self.parser.parse_args()
 
+        sort = '+'
+        if args['sort'] in ('-', '+'):
+            if args['sort'].startswith('-'):
+                sort = '-'
+
         objects = args['object_id']
 
         if not objects:
@@ -133,7 +154,11 @@ class VotedListResource(RedingResource):
 
         self.redis.sadd(tmp_key, *objects)
         self.redis.zinterstore(tmp_dest_key, (get_object_key_name(), tmp_key), aggregate='SUM')
-        sorted = self.redis.zrevrangebyscore(tmp_dest_key, '+inf', '-inf')
+
+        if sort == '+':
+            sorted = self.redis.zrangebyscore(tmp_dest_key, '-inf', '+inf')
+        else:
+            sorted = self.redis.zrevrangebyscore(tmp_dest_key, '+inf', '-inf')
 
         self.redis.delete(tmp_key, tmp_dest_key)
 
@@ -195,28 +220,50 @@ class VotedSummaryResource(RedingResource):
 
 class VotingUserListResource(RedingResource):
 
+    def __init__(self):
+        super(VotingUserListResource, self).__init__()
+        self.parser.add_argument('sort', type=str, default='+')
+        add_vote_arg(self.parser)
+
     @marshal_with(user_object_resource_fields)
     def get(self, object_id):
-        add_vote_arg(self.parser)
         args = self.parser.parse_args()
+
+        sort = '+'
+        start = '-inf'
+        end = '+inf'
+        if args['sort'] in ('-', '+'):
+            if args['sort'].startswith('-'):
+                sort = '-'
+                start = '+inf'
+                end = '-inf'
 
         vote = args['vote']
 
-        min_vote = '-inf'
-        max_vote = '+inf'
         if vote:
-            min_vote = vote
-            max_vote = vote
+            start = vote
+            end = vote
 
-        votes = self.redis.zrangebyscore(
-            get_user_object_key_name(
-                object_id=object_id,
-                **args
-            ),
-            min_vote,
-            max_vote,
-            withscores=True,
-        )
+        if sort == '+':
+            votes = self.redis.zrangebyscore(
+                get_user_object_key_name(
+                    object_id=object_id,
+                    **args
+                ),
+                start,
+                end,
+                withscores=True,
+            )
+        else:
+            votes = self.redis.zrevrangebyscore(
+                get_user_object_key_name(
+                    object_id=object_id,
+                    **args
+                ),
+                start,
+                end,
+                withscores=True,
+            )
 
         reply = [
             get_user_object_reply(
@@ -240,19 +287,39 @@ class VotingUserListResource(RedingResource):
 
 class UserSummaryResource(RedingResource):
 
+    def __init__(self):
+        super(UserSummaryResource, self).__init__()
+        self.parser.add_argument('sort', type=str, default='+')
+
     @marshal_with(user_object_resource_fields)
     def get(self, user_id):
         args = self.parser.parse_args()
 
-        votetimes = self.redis.zrangebyscore(
-            get_user_key_name(
-                user_id=user_id,
-                **args
-            ),
-            '-inf',
-            '+inf',
-            withscores=True,
-        )
+        sort = '+'
+        if args['sort'] in ('-', '+'):
+            if args['sort'].startswith('-'):
+                sort = '-'
+
+        if sort == '+':
+            votetimes = self.redis.zrangebyscore(
+                get_user_key_name(
+                    user_id=user_id,
+                    **args
+                ),
+                '-inf',
+                '+inf',
+                withscores=True,
+            )
+        else:
+            votetimes = self.redis.zrevrangebyscore(
+                get_user_key_name(
+                    user_id=user_id,
+                    **args
+                ),
+                '+inf',
+                '-inf',
+                withscores=True,
+            )
 
         reply = [
             get_user_object_reply(
@@ -416,9 +483,9 @@ class VoteSummaryResource(RedingResource):
             )
 
 __all__ = (
-    VotedSummaryResource,
-    VotedListResource,
-    VotingUserListResource,
-    VoteSummaryResource,
-    UserSummaryResource
+    'VotedSummaryResource',
+    'VotedListResource',
+    'VotingUserListResource',
+    'VoteSummaryResource',
+    'UserSummaryResource',
 )

@@ -1,5 +1,4 @@
-from reding.resources import VotedListResource, \
-    VotingUserListResource, VotedSummaryResource, UserSummaryResource, VoteSummaryResource
+from reding.resources import *
 
 from flask import Flask
 from flask.ext import restful
@@ -16,4 +15,6 @@ api.add_resource(
     '/objects/<string:object_id>/users/<string:user_id>/'
 )
 
-__all__ = (app,)
+__all__ = (
+    'app',
+)
