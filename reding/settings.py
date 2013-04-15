@@ -32,6 +32,9 @@ KEY_CONFIG = {
     'objects': 'apps'
 }
 
+PAGINATION_DEFAULT_OFFSET = 0
+PAGINATION_DEFAULT_SIZE = 10
+
 __all__ = (
     'REDIS_CONFIG',
     'DAEMON_CONFIG',

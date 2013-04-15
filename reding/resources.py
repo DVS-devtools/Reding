@@ -1,4 +1,6 @@
 from reding.settings import KEY_CONFIG, rclient
+from reding.settings import PAGINATION_DEFAULT_OFFSET as OFFSET
+from reding.settings import PAGINATION_DEFAULT_SIZE as SIZE
 
 from flask.ext.restful import reqparse, fields, marshal_with, abort
 from flask.ext import restful
@@ -81,6 +83,8 @@ class VotedListResource(RedingResource):
         super(VotedListResource, self).__init__()
         self.parser.add_argument('object_id', type=str, action='append')
         self.parser.add_argument('sort', type=str, default='+')
+        self.parser.add_argument('offset', type=int, default=OFFSET)
+        self.parser.add_argument('size', type=int, default=SIZE)
 
     @marshal_with(object_resource_fields)
     def get(self):
@@ -97,6 +101,8 @@ class VotedListResource(RedingResource):
                 '-inf',
                 '+inf',
                 withscores=True,
+                start=args['offset'],
+                num=args['size'],
             )
         else:
             amounts = self.redis.zrevrangebyscore(
@@ -104,6 +110,8 @@ class VotedListResource(RedingResource):
                 '+inf',
                 '-inf',
                 withscores=True,
+                start=args['offset'],
+                num=args['size'],
             )
 
         reply = []
@@ -223,6 +231,8 @@ class VotingUserListResource(RedingResource):
     def __init__(self):
         super(VotingUserListResource, self).__init__()
         self.parser.add_argument('sort', type=str, default='+')
+        self.parser.add_argument('offset', type=int, default=OFFSET)
+        self.parser.add_argument('size', type=int, default=SIZE)
         add_vote_arg(self.parser)
 
     @marshal_with(user_object_resource_fields)
@@ -253,6 +263,8 @@ class VotingUserListResource(RedingResource):
                 start,
                 end,
                 withscores=True,
+                start=args['offset'],
+                num=args['size'],
             )
         else:
             votes = self.redis.zrevrangebyscore(
@@ -263,6 +275,8 @@ class VotingUserListResource(RedingResource):
                 start,
                 end,
                 withscores=True,
+                start=args['offset'],
+                num=args['size'],
             )
 
         reply = [
@@ -290,6 +304,8 @@ class UserSummaryResource(RedingResource):
     def __init__(self):
         super(UserSummaryResource, self).__init__()
         self.parser.add_argument('sort', type=str, default='+')
+        self.parser.add_argument('offset', type=int, default=OFFSET)
+        self.parser.add_argument('size', type=int, default=SIZE)
 
     @marshal_with(user_object_resource_fields)
     def get(self, user_id):
@@ -309,6 +325,8 @@ class UserSummaryResource(RedingResource):
                 '-inf',
                 '+inf',
                 withscores=True,
+                start=args['offset'],
+                num=args['size'],
             )
         else:
             votetimes = self.redis.zrevrangebyscore(
@@ -319,6 +337,8 @@ class UserSummaryResource(RedingResource):
                 '+inf',
                 '-inf',
                 withscores=True,
+                start=args['offset'],
+                num=args['size'],
             )
 
         reply = [
