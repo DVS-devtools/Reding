@@ -97,7 +97,7 @@ class VotedListResource(RedingResource):
 
         if sort == '+':
             amounts = self.redis.zrangebyscore(
-                get_object_key_name(),
+                get_object_key_name(**args),
                 '-inf',
                 '+inf',
                 withscores=True,
@@ -106,7 +106,7 @@ class VotedListResource(RedingResource):
             )
         else:
             amounts = self.redis.zrevrangebyscore(
-                get_object_key_name(),
+                get_object_key_name(**args),
                 '+inf',
                 '-inf',
                 withscores=True,
@@ -116,9 +116,10 @@ class VotedListResource(RedingResource):
 
         reply = []
         for o, a in amounts:
+            args['object_id'] = o
             n = self.redis.zcount(
                 get_user_object_key_name(
-                    object_id=o,
+                    **args
                 ),
                 '-inf',
                 '+inf',
@@ -157,11 +158,11 @@ class VotedListResource(RedingResource):
         if not objects:
             return []
 
-        tmp_key = '{0}:tmp:{1}'.format(get_object_key_name(), int(time()))
-        tmp_dest_key = '{0}:tmp_dest:{1}'.format(get_object_key_name(), int(time()))
+        tmp_key = '{0}:tmp:{1}'.format(get_object_key_name(**args), int(time()))
+        tmp_dest_key = '{0}:tmp_dest:{1}'.format(get_object_key_name(**args), int(time()))
 
         self.redis.sadd(tmp_key, *objects)
-        self.redis.zinterstore(tmp_dest_key, (get_object_key_name(), tmp_key), aggregate='SUM')
+        self.redis.zinterstore(tmp_dest_key, (get_object_key_name(**args), tmp_key), aggregate='SUM')
 
         if sort == '+':
             sorted = self.redis.zrangebyscore(tmp_dest_key, '-inf', '+inf')
