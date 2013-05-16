@@ -279,9 +279,9 @@ Filters (on GET's views):
 
 What's missing:
 ----------------
-* List pagination;
-* List sorting;
-* Vote validator (?).
+* List pagination; DONE!
+* List sorting; DONE!
+* Any suggestion?
 
 
 Thanks to:
