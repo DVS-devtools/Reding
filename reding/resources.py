@@ -129,14 +129,15 @@ class VotedListResource(RedingResource):
             if n:
                 average = a / n
 
-            reply.append(
-                dict(
-                    votes_no=n,
-                    average=average,
-                    amount=a,
-                    object_id=o,
+                # skipping objects with zero votes
+                reply.append(
+                    dict(
+                        votes_no=n,
+                        average=average,
+                        amount=a,
+                        object_id=o,
+                    )
                 )
-            )
 
         return reply
 
