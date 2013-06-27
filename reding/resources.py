@@ -503,7 +503,13 @@ class VoteSummaryResource(RedingResource):
                 object_id,
                 correction,
             )
-        else:
+
+        amount = self.redis.zscore(
+            get_object_key_name(**args),
+            object_id,
+        )
+
+        if not amount and amount == 0:
             self.redis.zrem(
                 get_object_key_name(**args),
                 object_id,
