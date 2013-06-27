@@ -3,6 +3,8 @@ Reding
 
 [![Build Status](https://secure.travis-ci.org/BuongiornoMIP/Reding.png?branch=master)](https://travis-ci.org/BuongiornoMIP/Reding)
 [![Coverage Status](https://coveralls.io/repos/BuongiornoMIP/Reding/badge.png?branch=master)](https://coveralls.io/r/BuongiornoMIP/Reding)
+[![PyPi version](https://pypip.in/v/Reding/badge.png)](https://crate.io/packages/Reding/)
+[![PyPi downloads](https://pypip.in/d/Reding/badge.png)](https://crate.io/packages/Reding/)
 
 Rating on Redis - REST API on Flask
 -----------------------------------
@@ -297,7 +299,7 @@ LICENSE
 -------
 The MIT License (MIT)
 
-Copyright (c) 2013 Buongiorno Spa
+Copyright (c) 2013 Buongiorno S.p.A.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
