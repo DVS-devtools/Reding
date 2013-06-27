@@ -480,6 +480,11 @@ class VoteSummaryResource(RedingResource):
             user_id,
         )
 
+        self.redis.zrem(
+            get_object_key_name(**args),
+            object_id,
+        )
+
         return '', 204
 
     def _perform_correction(self, object_id, user_id, next_vote, args):
