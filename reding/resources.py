@@ -67,8 +67,6 @@ user_object_resource_fields = {
 
 
 class RedingResource(restful.Resource):
-
-    redis = rclient
     parser_cls = reqparse.RequestParser
 
     def __init__(self):
@@ -96,7 +94,7 @@ class VotedListResource(RedingResource):
                 sort = '-'
 
         if sort == '+':
-            amounts = self.redis.zrangebyscore(
+            amounts = rclient.zrangebyscore(
                 get_object_key_name(**args),
                 '-inf',
                 '+inf',
@@ -105,7 +103,7 @@ class VotedListResource(RedingResource):
                 num=args['size'],
             )
         else:
-            amounts = self.redis.zrevrangebyscore(
+            amounts = rclient.zrevrangebyscore(
                 get_object_key_name(**args),
                 '+inf',
                 '-inf',
@@ -117,7 +115,7 @@ class VotedListResource(RedingResource):
         reply = []
         for o, a in amounts:
             args['object_id'] = o
-            n = self.redis.zcount(
+            n = rclient.zcount(
                 get_user_object_key_name(
                     **args
                 ),
@@ -162,15 +160,15 @@ class VotedListResource(RedingResource):
         tmp_key = '{0}:tmp:{1}'.format(get_object_key_name(**args), int(time()))
         tmp_dest_key = '{0}:tmp_dest:{1}'.format(get_object_key_name(**args), int(time()))
 
-        self.redis.sadd(tmp_key, *objects)
-        self.redis.zinterstore(tmp_dest_key, (get_object_key_name(**args), tmp_key), aggregate='SUM')
+        rclient.sadd(tmp_key, *objects)
+        rclient.zinterstore(tmp_dest_key, (get_object_key_name(**args), tmp_key), aggregate='SUM')
 
         if sort == '+':
-            sorted = self.redis.zrangebyscore(tmp_dest_key, '-inf', '+inf')
+            sorted = rclient.zrangebyscore(tmp_dest_key, '-inf', '+inf')
         else:
-            sorted = self.redis.zrevrangebyscore(tmp_dest_key, '+inf', '-inf')
+            sorted = rclient.zrevrangebyscore(tmp_dest_key, '+inf', '-inf')
 
-        self.redis.delete(tmp_key, tmp_dest_key)
+        rclient.delete(tmp_key, tmp_dest_key)
 
         sorted_set = set(sorted)
         object_set = set(objects)
@@ -187,7 +185,7 @@ class VotedSummaryResource(RedingResource):
 
         vote = args['vote']
 
-        amount = self.redis.zscore(
+        amount = rclient.zscore(
             get_object_key_name(**args),
             object_id,
         )
@@ -198,7 +196,7 @@ class VotedSummaryResource(RedingResource):
             min_vote = vote
             max_vote = vote
 
-        number = self.redis.zcount(
+        number = rclient.zcount(
             get_user_object_key_name(
                 object_id=object_id,
                 **args
@@ -257,7 +255,7 @@ class VotingUserListResource(RedingResource):
             end = vote
 
         if sort == '+':
-            votes = self.redis.zrangebyscore(
+            votes = rclient.zrangebyscore(
                 get_user_object_key_name(
                     object_id=object_id,
                     **args
@@ -269,7 +267,7 @@ class VotingUserListResource(RedingResource):
                 num=args['size'],
             )
         else:
-            votes = self.redis.zrevrangebyscore(
+            votes = rclient.zrevrangebyscore(
                 get_user_object_key_name(
                     object_id=object_id,
                     **args
@@ -287,7 +285,7 @@ class VotingUserListResource(RedingResource):
                 user_id=u,
                 vote=v,
                 when=datetime.fromtimestamp(
-                    self.redis.zscore(
+                    rclient.zscore(
                         get_user_key_name(
                             user_id=u,
                             **args
@@ -319,7 +317,7 @@ class UserSummaryResource(RedingResource):
                 sort = '-'
 
         if sort == '+':
-            votetimes = self.redis.zrangebyscore(
+            votetimes = rclient.zrangebyscore(
                 get_user_key_name(
                     user_id=user_id,
                     **args
@@ -331,7 +329,7 @@ class UserSummaryResource(RedingResource):
                 num=args['size'],
             )
         else:
-            votetimes = self.redis.zrevrangebyscore(
+            votetimes = rclient.zrevrangebyscore(
                 get_user_key_name(
                     user_id=user_id,
                     **args
@@ -347,7 +345,7 @@ class UserSummaryResource(RedingResource):
             get_user_object_reply(
                 object_id=o,
                 user_id=user_id,
-                vote=self.redis.zscore(
+                vote=rclient.zscore(
                     get_user_object_key_name(
                         object_id=o,
                         **args
@@ -355,7 +353,7 @@ class UserSummaryResource(RedingResource):
                     user_id,
                 ),
                 when=datetime.fromtimestamp(
-                    self.redis.zscore(
+                    rclient.zscore(
                         get_user_key_name(
                             user_id=user_id,
                             **args
@@ -375,7 +373,7 @@ class VoteSummaryResource(RedingResource):
     def get(self, object_id, user_id):
         args = self.parser.parse_args()
 
-        vote = self.redis.zscore(
+        vote = rclient.zscore(
             get_user_object_key_name(
                 object_id=object_id,
                 **args
@@ -383,7 +381,7 @@ class VoteSummaryResource(RedingResource):
             user_id,
         )
 
-        when_ts = self.redis.zscore(
+        when_ts = rclient.zscore(
             get_user_key_name(
                 user_id=user_id,
                 **args
@@ -419,7 +417,7 @@ class VoteSummaryResource(RedingResource):
 
         self._perform_correction(object_id, user_id, next_vote, args)
 
-        self.redis.zadd(
+        rclient.zadd(
             get_user_object_key_name(
                 object_id=object_id,
                 **args
@@ -428,7 +426,7 @@ class VoteSummaryResource(RedingResource):
             user_id,
         )
 
-        self.redis.zadd(
+        rclient.zadd(
             get_user_key_name(
                 user_id=user_id,
                 **args
@@ -440,7 +438,7 @@ class VoteSummaryResource(RedingResource):
         return get_user_object_reply(
             object_id=object_id,
             user_id=user_id,
-            vote=self.redis.zscore(
+            vote=rclient.zscore(
                 get_user_object_key_name(
                     object_id=object_id,
                     **args
@@ -448,7 +446,7 @@ class VoteSummaryResource(RedingResource):
                 user_id,
             ),
             when=datetime.fromtimestamp(
-                self.redis.zscore(
+                rclient.zscore(
                     get_user_key_name(
                         user_id=user_id,
                         **args
@@ -464,7 +462,7 @@ class VoteSummaryResource(RedingResource):
         next_vote = 0
         self._perform_correction(object_id, user_id, next_vote, args)
 
-        self.redis.zrem(
+        rclient.zrem(
             get_user_key_name(
                 user_id=user_id,
                 **args
@@ -472,7 +470,7 @@ class VoteSummaryResource(RedingResource):
             object_id,
         )
 
-        self.redis.zrem(
+        rclient.zrem(
             get_user_object_key_name(
                 object_id=object_id,
                 **args
@@ -483,7 +481,7 @@ class VoteSummaryResource(RedingResource):
         return '', 204
 
     def _perform_correction(self, object_id, user_id, next_vote, args):
-        prev_vote = self.redis.zscore(
+        prev_vote = rclient.zscore(
             get_user_object_key_name(
                 object_id=object_id,
                 **args
@@ -498,19 +496,19 @@ class VoteSummaryResource(RedingResource):
 
         # perform vote correction in `all apps` zset
         if correction:
-            self.redis.zincrby(
+            rclient.zincrby(
                 get_object_key_name(**args),
                 object_id,
                 correction,
             )
 
-        amount = self.redis.zscore(
+        amount = rclient.zscore(
             get_object_key_name(**args),
             object_id,
         )
 
         if not amount and amount == 0:
-            self.redis.zrem(
+            rclient.zrem(
                 get_object_key_name(**args),
                 object_id,
             )

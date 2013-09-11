@@ -1,5 +1,4 @@
 import redis
-
 import os
 
 REDIS_CONFIG = {
@@ -8,16 +7,7 @@ REDIS_CONFIG = {
     'db': int(os.getenv('REDING_REDIS_DB', 0)),
 }
 
-TEST_REDIS_CONFIG = {
-    'host': os.getenv('REDING_TEST_REDIS_HOST', 'localhost'),
-    'port': int(os.getenv('REDING_TEST_REDIS_PORT', 6379)),
-    'db': int(os.getenv('REDING_TEST_REDIS_DB', 15)),
-}
-
-if 'unittest' in globals():
-    rclient = redis.StrictRedis(**TEST_REDIS_CONFIG)
-else:
-    rclient = redis.StrictRedis(**REDIS_CONFIG)
+rclient = redis.StrictRedis(**REDIS_CONFIG)
 
 DAEMON_CONFIG = {
     'host': os.getenv('REDING_DAEMON_HOST', '0.0.0.0'),

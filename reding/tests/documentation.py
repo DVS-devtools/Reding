@@ -1,12 +1,19 @@
-from reding.tests.utils import RedingTestCase
-
+import os
 import json
+import redis
+from reding import resources
+from reding.tests.utils import RedingTestCase
+resources.rclient = redis.StrictRedis(
+    host=os.getenv('REDING_TEST_REDIS_HOST', 'localhost'),
+    port=int(os.getenv('REDING_TEST_REDIS_PORT', 6379)),
+    db=int(os.getenv('REDING_TEST_REDIS_DB', 15)),
+)
 
 
 class RedingDocumentationTestCase(RedingTestCase):
 
     def test_00_voted_list_resource_empty(self):
-        self.redis.flushdb()
+        resources.rclient.flushdb()
         response = self.assert_get('/objects/')
         self.assertEqual(json.loads(response.data), [])
 
