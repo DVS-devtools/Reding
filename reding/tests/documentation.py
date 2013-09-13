@@ -1,12 +1,19 @@
-from reding.tests.utils import RedingTestCase
-
+# coding=utf-8
+import os
 import json
+import redis
+from reding import managers
+from reding.tests.utils import RedingTestCase
+managers.rclient = redis.StrictRedis(
+    host=os.getenv('REDING_TEST_REDIS_HOST', 'localhost'),
+    port=int(os.getenv('REDING_TEST_REDIS_PORT', 6379)),
+    db=int(os.getenv('REDING_TEST_REDIS_DB', 15)),
+)
 
 
 class RedingDocumentationTestCase(RedingTestCase):
-
     def test_00_voted_list_resource_empty(self):
-        self.redis.flushdb()
+        managers.rclient.flushdb()
         response = self.assert_get('/objects/')
         self.assertEqual(json.loads(response.data), [])
 
@@ -94,7 +101,7 @@ class RedingDocumentationTestCase(RedingTestCase):
         expected = {
             u"amount": 19,
             u"average": u"9.5",
-            u"object_id": url_parts['object_id'],
+            u"object_id": url_parts[u'object_id'],
             u"votes_no": 2,
         }
         self.assertEqual(json.loads(response.data), expected)
@@ -109,7 +116,8 @@ class RedingDocumentationTestCase(RedingTestCase):
         )
         expected = {
             u"vote": 9,
-            u"when": self.user_vote_dates[url_parts['user_id']][url_parts['object_id']]
+            u'review': None,
+            u"when": self.user_vote_dates[url_parts[u'user_id']][url_parts[u'object_id']]
         }
         expected.update(url_parts)
         self.assertEqual(json.loads(response.data), expected)
@@ -187,6 +195,7 @@ class RedingDocumentationTestCase(RedingTestCase):
         headers = []
         data = {
             u'vote': 10,
+            u'review': u'the ☃ loves lotr',
         }
         response = self.assert_post_or_put(
             '/objects/{object_id}/users/{user_id}/'.format(**url_parts),
@@ -207,13 +216,15 @@ class RedingDocumentationTestCase(RedingTestCase):
         expected = [
             {
                 u"vote": 9,
-                u"when": self.user_vote_dates[url_parts['user_id']][reply_objects[0]],
+                u'review': None,
+                u"when": self.user_vote_dates[url_parts[u'user_id']][reply_objects[0]],
                 u"user_id": url_parts[u'user_id'],
                 u"object_id": reply_objects[0],
             },
             {
                 u"vote": 10,
-                u"when": self.user_vote_dates[url_parts['user_id']][reply_objects[1]],
+                u'review': u'the ☃ loves lotr',
+                u"when": self.user_vote_dates[url_parts[u'user_id']][reply_objects[1]],
                 u"user_id": url_parts[u'user_id'],
                 u"object_id": reply_objects[1],
             }
@@ -245,6 +256,7 @@ class RedingDocumentationTestCase(RedingTestCase):
         expected = [
             {
                 u'vote': 10,
+                u'review': u'the ☃ loves lotr',
                 u'user_id': user_id,
                 u'when': self.user_vote_dates[user_id][object_id],
                 u'object_id': object_id,
