@@ -217,7 +217,7 @@ Server: mindflayer
 Well, stop programming books...I'm gonna give a '10' to the amazing 'The Lord of the Rings Sketchbook',
 but this time let me add a review:
 ```
-$ curl -i -XPUT http://localhost:5000/objects/978-0618640140/users/gsalluzzo/ -d "vote=10&review=LOTR is awesome!"
+$ curl -i -XPUT http://localhost:5000/objects/978-0618640140/users/gsalluzzo/ -d "vote=10&review=the ☃ loves lotr"
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 110
@@ -230,7 +230,7 @@ Server: mindflayer
     "when": "Fri, 01 Feb 2013 18:21:56 -0000",
     "user_id": "gsalluzzo",
     "object_id": "978-0618640140",
-    "review": "LOTR is awesome!"
+    "review": "the ☃ loves lotr"
 }
 }
 ```
@@ -256,7 +256,7 @@ Server: mindflayer
     "when": "Fri, 01 Feb 2013 18:21:56 -0000",
     "user_id": "gsalluzzo",
     "object_id": "978-0618640140",
-    "review": "LOTR is awesome!"
+    "review": "the ☃ loves lotr"
 }]
 ```
 

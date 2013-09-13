@@ -7,6 +7,7 @@ from flask.ext.restful import reqparse, fields, marshal_with, abort
 from flask.ext import restful
 
 from time import time
+from six import text_type
 
 
 def get_user_object_reply(object_id, user_id, vote, when, review):
@@ -28,7 +29,7 @@ object_resource_fields = {
 
 user_object_resource_fields = {
     'vote': fields.Integer,
-    'review': fields.String,
+    'review': fields.Raw,
     'object_id': fields.String,
     'user_id': fields.String,
     'when': fields.DateTime
@@ -240,7 +241,7 @@ class VoteSummaryResource(RedingResource):
     @marshal_with(user_object_resource_fields)
     def put(self, object_id, user_id):
         self.parser.add_argument('vote', type=int, required=True)
-        self.parser.add_argument('review', type=str)
+        self.parser.add_argument('review', type=text_type)
         args = self.parser.parse_args()
 
         osmanager = ObjectSubjectsManager(**args)

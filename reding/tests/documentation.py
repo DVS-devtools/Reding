@@ -1,3 +1,4 @@
+# coding=utf-8
 import os
 import json
 import redis
@@ -194,7 +195,7 @@ class RedingDocumentationTestCase(RedingTestCase):
         headers = []
         data = {
             u'vote': 10,
-            u'review': u'LOTR is awesome',
+            u'review': u'the ☃ loves lotr',
         }
         response = self.assert_post_or_put(
             '/objects/{object_id}/users/{user_id}/'.format(**url_parts),
@@ -222,7 +223,7 @@ class RedingDocumentationTestCase(RedingTestCase):
             },
             {
                 u"vote": 10,
-                u'review': u'LOTR is awesome',
+                u'review': u'the ☃ loves lotr',
                 u"when": self.user_vote_dates[url_parts[u'user_id']][reply_objects[1]],
                 u"user_id": url_parts[u'user_id'],
                 u"object_id": reply_objects[1],
@@ -255,7 +256,7 @@ class RedingDocumentationTestCase(RedingTestCase):
         expected = [
             {
                 u'vote': 10,
-                u'review': u'LOTR is awesome',
+                u'review': u'the ☃ loves lotr',
                 u'user_id': user_id,
                 u'when': self.user_vote_dates[user_id][object_id],
                 u'object_id': object_id,

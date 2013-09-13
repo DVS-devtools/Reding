@@ -1,5 +1,7 @@
 from datetime import datetime
-from reding.settings import KEY_CONFIG, rclient
+import redis
+from reding.settings import KEY_CONFIG, REDIS_CONFIG
+rclient = redis.StrictRedis(**REDIS_CONFIG)
 
 
 def get_key_name(template, **kw):
@@ -63,7 +65,7 @@ class ObjectSubjectsManager(object):
         )
         name = self.template_review.format(object_id=object_id)
         if review:
-            rclient.hset(name,user_id, review)
+            rclient.hset(name, user_id, review)
         else:
             rclient.hdel(name, user_id)
 
