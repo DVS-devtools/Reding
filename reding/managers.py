@@ -8,9 +8,17 @@ def get_key_name(template, **kw):
     return template.format(**d)
 
 
+def zrange(start, end, reverse):
+    if not reverse:
+        return rclient.zrangebyscore, start, end
+    else:
+        return rclient.zrevrangebyscore, end, start
+
+
 class ObjectSubjectsManager(object):
     def __init__(self, **kwargs):
         self.template = get_key_name('{prefix}:{object}:{{object_id}}:{subjects}', **kwargs)
+        self.template_review = get_key_name('{prefix}:{object}:{{object_id}}:review:{subjects}', **kwargs)
 
     def count(self, object_id, min_vote='-inf', max_vote='+inf'):
         return rclient.zcount(
@@ -20,10 +28,7 @@ class ObjectSubjectsManager(object):
         )
 
     def scoredrange(self, object_id, offset, size, min_vote='-inf', max_vote='+inf', reverse=False):
-        func = rclient.zrangebyscore
-        if reverse:
-            func = rclient.zrevrangebyscore
-            min_vote, max_vote = max_vote, min_vote
+        func, min_vote, max_vote = zrange(min_vote, max_vote, reverse)
         return func(
             name=self.template.format(object_id=object_id),
             min=min_vote,
@@ -39,16 +44,36 @@ class ObjectSubjectsManager(object):
             value=user_id,
         )
 
-    def create(self, object_id, user_id, vote):
+    def review(self, object_id, user_id):
+        return rclient.hget(
+            name=self.template_review.format(object_id=object_id),
+            key=user_id,
+        )
+
+    def reviews(self, object_id, *user_ids):
+        return dict(zip(user_ids, rclient.hmget(
+            self.template_review.format(object_id=object_id), user_ids
+        )))
+
+    def create(self, object_id, user_id, vote, review):
         rclient.zadd(
             self.template.format(object_id=object_id),
             vote,
             user_id,
         )
+        name = self.template_review.format(object_id=object_id)
+        if review:
+            rclient.hset(name,user_id, review)
+        else:
+            rclient.hdel(name, user_id)
 
     def remove(self, object_id, user_id):
         rclient.zrem(
             self.template.format(object_id=object_id),
+            user_id,
+        )
+        rclient.hdel(
+            self.template_review.format(object_id=object_id),
             user_id,
         )
 
@@ -58,11 +83,8 @@ class SubjectObjectsManager(object):
         self.template = get_key_name('{prefix}:{subject}:{{user_id}}:{objects}', **kwargs)
 
     def scoredrange(self, user_id, offset, size, min_vote='-inf', max_vote='+inf', reverse=False):
-        func = rclient.zrangebyscore
-        if reverse:
-            func = rclient.zrevrangebyscore
-            min_vote, max_vote = max_vote, min_vote
-        return func(
+        func, min_vote, max_vote = zrange(min_vote, max_vote, reverse)
+        scored = func(
             name=self.template.format(user_id=user_id),
             min=min_vote,
             max=max_vote,
@@ -70,6 +92,7 @@ class SubjectObjectsManager(object):
             num=size,
             withscores=True,
         )
+        return [(k, datetime.fromtimestamp(v)) for k, v in scored]
 
     def score(self, user_id, object_id):
         try:
@@ -80,10 +103,10 @@ class SubjectObjectsManager(object):
         except TypeError:
             return 0
 
-    def create(self, user_id, object_id, ts):
+    def create(self, user_id, object_id, timestamp):
         rclient.zadd(
             self.template.format(user_id=user_id),
-            ts,
+            timestamp,
             object_id,
         )
 
@@ -99,10 +122,7 @@ class ObjectsManager(object):
         self.template = get_key_name('{prefix}:{objects}', **kwargs)
 
     def scoredrange(self, offset, size, min_vote='-inf', max_vote='+inf', reverse=False):
-        func = rclient.zrangebyscore
-        if reverse:
-            func = rclient.zrevrangebyscore
-            min_vote, max_vote = max_vote, min_vote
+        func, min_vote, max_vote = zrange(min_vote, max_vote, reverse)
         return func(
             name=self.template,
             min=min_vote,

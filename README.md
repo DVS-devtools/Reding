@@ -49,7 +49,8 @@ Server: mindflayer
     "vote": 10,
     "when": "Fri, 01 Feb 2013 17:57:44 -0000",
     "user_id": "gsalluzzo",
-    "object_id": "978-0132678209"
+    "object_id": "978-0132678209",
+    "review": null
 }
 ```
 Ehy hackers, I've just used a PUT call, but yes, I know, it's the first vote, I should use a POST one. Reding maps POST method on the PUT one, so the client does not need to know if it's the first time I'm voting this object.
@@ -68,7 +69,8 @@ Server: mindflayer
     "vote": 9,
     "when": "Fri, 01 Feb 2013 18:03:16 -0000",
     "user_id": "gsalluzzo",
-    "object_id": "978-0132678209"
+    "object_id": "978-0132678209",
+    "review": null
 }
 ```
 
@@ -104,7 +106,8 @@ Server: mindflayer
     "vote": 10,
     "when": "Fri, 01 Feb 2013 18:08:03 -0000",
     "user_id": "wchun",
-    "object_id": "978-0132678209"
+    "object_id": "978-0132678209",
+    "review": null
 }
 ```
 The author said '10'! What a surprise! :D
@@ -159,7 +162,8 @@ Server: mindflayer
     "vote": 9,
     "when": "Fri, 01 Feb 2013 18:03:16 -0000",
     "user_id": "gsalluzzo",
-    "object_id": "978-0132678209"
+    "object_id": "978-0132678209",
+    "review": null
 }
 ```
 
@@ -187,7 +191,8 @@ Server: mindflayer
     "vote": 3,
     "when": "Fri, 01 Feb 2013 18:15:38 -0000",
     "user_id": "mymom",
-    "object_id": "978-0132678209"
+    "object_id": "978-0132678209",
+    "review": null
 }
 ```
 
@@ -209,9 +214,10 @@ Server: mindflayer
 }
 ```
 
-Well, stop programming books...I'm gonna give a '10' to the amazing 'The Lord of the Rings Sketchbook':
+Well, stop programming books...I'm gonna give a '10' to the amazing 'The Lord of the Rings Sketchbook',
+but this time let me add a review:
 ```
-$ curl -i -XPUT http://localhost:5000/objects/978-0618640140/users/gsalluzzo/ -d "vote=10"
+$ curl -i -XPUT http://localhost:5000/objects/978-0618640140/users/gsalluzzo/ -d "vote=10&review=LOTR is awesome!"
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 110
@@ -223,11 +229,13 @@ Server: mindflayer
     "vote": 10,
     "when": "Fri, 01 Feb 2013 18:21:56 -0000",
     "user_id": "gsalluzzo",
-    "object_id": "978-0618640140"
+    "object_id": "978-0618640140",
+    "review": "LOTR is awesome!"
+}
 }
 ```
 
-Let's see the books I voted:
+Let's see the books I voted and what I wrote about them:
 ```
 $ curl -i http://localhost:5000/users/gsalluzzo/
 HTTP/1.1 200 OK
@@ -241,12 +249,14 @@ Server: mindflayer
     "vote": 9,
     "when": "Fri, 01 Feb 2013 18:03:16 -0000",
     "user_id": "gsalluzzo",
-    "object_id": "978-0132678209"
+    "object_id": "978-0132678209",
+    "review": null
 }, {
     "vote": 10,
     "when": "Fri, 01 Feb 2013 18:21:56 -0000",
     "user_id": "gsalluzzo",
-    "object_id": "978-0618640140"
+    "object_id": "978-0618640140",
+    "review": "LOTR is awesome!"
 }]
 ```
 

@@ -9,21 +9,13 @@ from flask.ext import restful
 from time import time
 
 
-def add_vote_arg(parser, required=False):
-    parser.add_argument('vote', type=int, required=required, default=0)
-
-
-def add_config_args(parser):
-    for k in KEY_CONFIG:
-        parser.add_argument(k, type=str)
-
-
-def get_user_object_reply(object_id, user_id, vote, when):
+def get_user_object_reply(object_id, user_id, vote, when, review):
     return {
         'object_id': object_id,
         'user_id': user_id,
         'vote': vote,
         'when': when,
+        'review': review
     }
 
 
@@ -36,6 +28,7 @@ object_resource_fields = {
 
 user_object_resource_fields = {
     'vote': fields.Integer,
+    'review': fields.String,
     'object_id': fields.String,
     'user_id': fields.String,
     'when': fields.DateTime
@@ -48,12 +41,16 @@ class RedingResource(restful.Resource):
     def __init__(self):
         super(RedingResource, self).__init__()
         self.parser = self.parser_cls()
-        add_config_args(self.parser)
+        self.configure()
+
+    def configure(self):
+        for key in KEY_CONFIG:
+            self.parser.add_argument(key, type=str)
 
 
 class VotedListResource(RedingResource):
-    def __init__(self):
-        super(VotedListResource, self).__init__()
+    def configure(self):
+        super(VotedListResource, self).configure()
         self.parser.add_argument('object_id', type=str, action='append')
         self.parser.add_argument('sort', type=str, default='+')
         self.parser.add_argument('offset', type=int, default=OFFSET)
@@ -100,9 +97,12 @@ class VotedListResource(RedingResource):
 
 
 class VotedSummaryResource(RedingResource):
+    def configure(self):
+        super(VotedSummaryResource, self).configure()
+        self.parser.add_argument('vote', type=int, default=0)
+
     @marshal_with(object_resource_fields)
     def get(self, object_id):
-        add_vote_arg(self.parser)
         args = self.parser.parse_args()
 
         vote = args['vote']
@@ -135,18 +135,21 @@ class VotedSummaryResource(RedingResource):
 
 
 class VotingUserListResource(RedingResource):
-    def __init__(self):
-        super(VotingUserListResource, self).__init__()
+    def configure(self):
+        super(VotingUserListResource, self).configure()
         self.parser.add_argument('sort', type=str, default='+')
         self.parser.add_argument('offset', type=int, default=OFFSET)
         self.parser.add_argument('size', type=int, default=SIZE)
-        add_vote_arg(self.parser)
+        self.parser.add_argument('vote', type=int, default=0)
 
     @marshal_with(user_object_resource_fields)
     def get(self, object_id):
         args = self.parser.parse_args()
 
-        votes = ObjectSubjectsManager(**args).scoredrange(
+        osmanager = ObjectSubjectsManager(**args)
+        somanager = SubjectObjectsManager(**args)
+
+        votes = osmanager.scoredrange(
             object_id=object_id,
             offset=args['offset'],
             size=args['size'],
@@ -154,21 +157,27 @@ class VotingUserListResource(RedingResource):
             max_vote=args['vote'] or '+inf',
             reverse=args['sort'] == '-',
         )
-        somanager = SubjectObjectsManager(**args)
+
+        if not votes:
+            return []
+
+        reviews = osmanager.reviews(object_id, *[user_id for user_id, _ in votes])
+
         reply = [
             get_user_object_reply(
                 object_id=object_id,
                 user_id=user_id,
                 vote=vote,
                 when=somanager.score(user_id=user_id, object_id=object_id),
+                review=reviews[user_id],
             ) for user_id, vote in votes
         ]
         return reply
 
 
 class UserSummaryResource(RedingResource):
-    def __init__(self):
-        super(UserSummaryResource, self).__init__()
+    def configure(self):
+        super(UserSummaryResource, self).configure()
         self.parser.add_argument('sort', type=str, default='+')
         self.parser.add_argument('offset', type=int, default=OFFSET)
         self.parser.add_argument('size', type=int, default=SIZE)
@@ -177,8 +186,8 @@ class UserSummaryResource(RedingResource):
     def get(self, user_id):
         args = self.parser.parse_args()
 
-        somanager = SubjectObjectsManager(**args)
         osmanager = ObjectSubjectsManager(**args)
+        somanager = SubjectObjectsManager(**args)
 
         votetimes = somanager.scoredrange(
             user_id=user_id,
@@ -191,8 +200,9 @@ class UserSummaryResource(RedingResource):
                 object_id=object_id,
                 user_id=user_id,
                 vote=osmanager.score(object_id=object_id, user_id=user_id),
-                when=somanager.score(user_id=user_id, object_id=object_id),
-            ) for object_id, t in votetimes
+                review=osmanager.review(object_id=object_id, user_id=user_id),
+                when=when,
+            ) for object_id, when in votetimes
         ]
 
         return reply
@@ -203,8 +213,11 @@ class VoteSummaryResource(RedingResource):
     def get(self, object_id, user_id):
         args = self.parser.parse_args()
 
-        vote = ObjectSubjectsManager(**args).score(object_id=object_id, user_id=user_id)
-        when = SubjectObjectsManager(**args).score(user_id=user_id, object_id=object_id)
+        osmanager = ObjectSubjectsManager(**args)
+        somanager = SubjectObjectsManager(**args)
+
+        vote = osmanager.score(object_id=object_id, user_id=user_id)
+        when = somanager.score(user_id=user_id, object_id=object_id)
 
         if not (vote and when):
             message = "No vote on {object_id} by {user_id}.".format(
@@ -218,6 +231,7 @@ class VoteSummaryResource(RedingResource):
             user_id=user_id,
             vote=vote,
             when=when,
+            review=osmanager.review(object_id=object_id, user_id=user_id),
         )
 
     def post(self, object_id, user_id):
@@ -225,18 +239,23 @@ class VoteSummaryResource(RedingResource):
 
     @marshal_with(user_object_resource_fields)
     def put(self, object_id, user_id):
-        add_vote_arg(self.parser, required=True)
+        self.parser.add_argument('vote', type=int, required=True)
+        self.parser.add_argument('review', type=str)
         args = self.parser.parse_args()
 
+        osmanager = ObjectSubjectsManager(**args)
+        somanager = SubjectObjectsManager(**args)
+
         self._perform_correction(object_id, user_id, args['vote'], args)
-        ObjectSubjectsManager(**args).create(object_id=object_id, user_id=user_id, vote=args['vote'])
-        SubjectObjectsManager(**args).create(user_id=user_id, object_id=object_id, ts=time())
+        osmanager.create(object_id=object_id, user_id=user_id, vote=args['vote'], review=args['review'])
+        somanager.create(user_id=user_id, object_id=object_id, timestamp=time())
 
         return get_user_object_reply(
             object_id=object_id,
             user_id=user_id,
-            vote=ObjectSubjectsManager(**args).score(object_id=object_id, user_id=user_id),
-            when=SubjectObjectsManager(**args).score(user_id=user_id, object_id=object_id),
+            vote=osmanager.score(object_id=object_id, user_id=user_id),
+            when=somanager.score(user_id=user_id, object_id=object_id),
+            review=osmanager.review(object_id=object_id, user_id=user_id),
         )
 
     def delete(self, object_id, user_id):
