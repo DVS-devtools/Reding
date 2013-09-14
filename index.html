@@ -39,25 +39,29 @@
         <ul></ul>
       </nav>
       <section>
-        <h1>Reding</h1>
+        <h1>
+<a name="reding" class="anchor" href="#reding"><span class="octicon octicon-link"></span></a>Reding</h1>
 
 <p><a href="https://travis-ci.org/BuongiornoMIP/Reding"><img src="https://secure.travis-ci.org/BuongiornoMIP/Reding.png?branch=master" alt="Build Status"></a>
 <a href="https://coveralls.io/r/BuongiornoMIP/Reding"><img src="https://coveralls.io/repos/BuongiornoMIP/Reding/badge.png?branch=master" alt="Coverage Status"></a>
 <a href="https://crate.io/packages/Reding/"><img src="https://pypip.in/v/Reding/badge.png" alt="PyPi version"></a>
 <a href="https://crate.io/packages/Reding/"><img src="https://pypip.in/d/Reding/badge.png" alt="PyPi downloads"></a></p>
 
-<h2>Rating on Redis - REST API on Flask</h2>
+<h2>
+<a name="rating-on-redis---rest-api-on-flask" class="anchor" href="#rating-on-redis---rest-api-on-flask"><span class="octicon octicon-link"></span></a>Rating on Redis - REST API on Flask</h2>
 
 <p>Reding is a <em>WSGI</em> Python app made using the amazing Flask web framework, and one of its extension, Flask-RESTful.</p>
 
 <p>On Redis side, it uses the powerful sorted set data type to provide all the functionalities.</p>
 
-<h2>Installation:</h2>
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation:</h2>
 
 <pre><code>pip install Reding
 </code></pre>
 
-<h2>Some examples:</h2>
+<h2>
+<a name="some-examples" class="anchor" href="#some-examples"><span class="octicon octicon-link"></span></a>Some examples:</h2>
 
 <p>Let's start, my Reding is empty, no book has been voted:</p>
 
@@ -69,7 +73,7 @@ Date: Fri, 01 Feb 2013 16:50:47 GMT
 Server: mindflayer
 </code></pre>
 
-<div class="highlight"><pre><span class="p">[]</span>
+<div class="highlight highlight-json"><pre><span class="p">[]</span>
 </pre></div>
 
 <p>I wanna give a '10' to the amazing 'Core Python Applications Programming' book (ISBN-13: 978-0132678209):</p>
@@ -82,11 +86,12 @@ Date: Fri, 01 Feb 2013 16:57:44 GMT
 Server: mindflayer
 </code></pre>
 
-<div class="highlight"><pre><span class="p">{</span>
+<div class="highlight highlight-json"><pre><span class="p">{</span>
     <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 17:57:44 -0000"</span><span class="p">,</span>
     <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"gsalluzzo"</span><span class="p">,</span>
-    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
+    <span class="nt">"review"</span><span class="p">:</span> <span class="kc">null</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -102,11 +107,12 @@ Date: Fri, 01 Feb 2013 17:03:16 GMT
 Server: mindflayer
 </code></pre>
 
-<div class="highlight"><pre><span class="p">{</span>
+<div class="highlight highlight-json"><pre><span class="p">{</span>
     <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
     <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 18:03:16 -0000"</span><span class="p">,</span>
     <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"gsalluzzo"</span><span class="p">,</span>
-    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
+    <span class="nt">"review"</span><span class="p">:</span> <span class="kc">null</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -120,7 +126,7 @@ Date: Fri, 01 Feb 2013 17:05:46 GMT
 Server: mindflayer
 </code></pre>
 
-<div class="highlight"><pre><span class="p">[{</span>
+<div class="highlight highlight-json"><pre><span class="p">[{</span>
     <span class="nt">"amount"</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
     <span class="nt">"average"</span><span class="p">:</span> <span class="s2">"9.0"</span><span class="p">,</span>
     <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
@@ -138,11 +144,12 @@ Date: Fri, 01 Feb 2013 17:08:03 GMT
 Server: mindflayer
 </code></pre>
 
-<div class="highlight"><pre><span class="p">{</span>
+<div class="highlight highlight-json"><pre><span class="p">{</span>
     <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 18:08:03 -0000"</span><span class="p">,</span>
     <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"wchun"</span><span class="p">,</span>
-    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
+    <span class="nt">"review"</span><span class="p">:</span> <span class="kc">null</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -158,7 +165,7 @@ Date: Fri, 01 Feb 2013 17:09:42 GMT
 Server: mindflayer
 </code></pre>
 
-<div class="highlight"><pre><span class="p">[{</span>
+<div class="highlight highlight-json"><pre><span class="p">[{</span>
     <span class="nt">"amount"</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
     <span class="nt">"average"</span><span class="p">:</span> <span class="s2">"9.5"</span><span class="p">,</span>
     <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
@@ -176,7 +183,7 @@ Date: Fri, 01 Feb 2013 17:11:13 GMT
 Server: mindflayer
 </code></pre>
 
-<div class="highlight"><pre><span class="p">{</span>
+<div class="highlight highlight-json"><pre><span class="p">{</span>
     <span class="nt">"amount"</span><span class="p">:</span> <span class="mi">19</span><span class="p">,</span>
     <span class="nt">"average"</span><span class="p">:</span> <span class="s2">"9.5"</span><span class="p">,</span>
     <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
@@ -194,11 +201,12 @@ Date: Fri, 01 Feb 2013 17:12:00 GMT
 Server: mindflayer
 </code></pre>
 
-<div class="highlight"><pre><span class="p">{</span>
+<div class="highlight highlight-json"><pre><span class="p">{</span>
     <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
     <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 18:03:16 -0000"</span><span class="p">,</span>
     <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"gsalluzzo"</span><span class="p">,</span>
-    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
+    <span class="nt">"review"</span><span class="p">:</span> <span class="kc">null</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -222,11 +230,12 @@ Date: Fri, 01 Feb 2013 17:15:38 GMT
 Server: mindflayer
 </code></pre>
 
-<div class="highlight"><pre><span class="p">{</span>
+<div class="highlight highlight-json"><pre><span class="p">{</span>
     <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
     <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 18:15:38 -0000"</span><span class="p">,</span>
     <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"mymom"</span><span class="p">,</span>
-    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
+    <span class="nt">"review"</span><span class="p">:</span> <span class="kc">null</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -240,7 +249,7 @@ Date: Fri, 01 Feb 2013 17:17:09 GMT
 Server: mindflayer
 </code></pre>
 
-<div class="highlight"><pre><span class="p">{</span>
+<div class="highlight highlight-json"><pre><span class="p">{</span>
     <span class="nt">"amount"</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span>
     <span class="nt">"average"</span><span class="p">:</span> <span class="s2">"6.0"</span><span class="p">,</span>
     <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
@@ -248,9 +257,10 @@ Server: mindflayer
 <span class="p">}</span>
 </pre></div>
 
-<p>Well, stop programming books...I'm gonna give a '10' to the amazing 'The Lord of the Rings Sketchbook':</p>
+<p>Well, stop programming books...I'm gonna give a '10' to the amazing 'The Lord of the Rings Sketchbook',
+but this time let me add a review:</p>
 
-<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0618640140/users/gsalluzzo/ -d "vote=10"
+<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0618640140/users/gsalluzzo/ -d "vote=10&amp;review=the ☃ loves lotr"
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 110
@@ -258,15 +268,17 @@ Date: Fri, 01 Feb 2013 17:21:56 GMT
 Server: mindflayer
 </code></pre>
 
-<div class="highlight"><pre><span class="p">{</span>
+<div class="highlight highlight-json"><pre><span class="p">{</span>
     <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 18:21:56 -0000"</span><span class="p">,</span>
     <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"gsalluzzo"</span><span class="p">,</span>
-    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0618640140"</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0618640140"</span><span class="p">,</span>
+    <span class="nt">"review"</span><span class="p">:</span> <span class="s2">"the ☃ loves lotr"</span>
 <span class="p">}</span>
+<span class="err">}</span>
 </pre></div>
 
-<p>Let's see the books I voted:</p>
+<p>Let's see the books I voted and what I wrote about them:</p>
 
 <pre><code>$ curl -i http://localhost:5000/users/gsalluzzo/
 HTTP/1.1 200 OK
@@ -276,16 +288,18 @@ Date: Fri, 01 Feb 2013 17:22:55 GMT
 Server: mindflayer
 </code></pre>
 
-<div class="highlight"><pre><span class="p">[{</span>
+<div class="highlight highlight-json"><pre><span class="p">[{</span>
     <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span>
     <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 18:03:16 -0000"</span><span class="p">,</span>
     <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"gsalluzzo"</span><span class="p">,</span>
-    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0132678209"</span><span class="p">,</span>
+    <span class="nt">"review"</span><span class="p">:</span> <span class="kc">null</span>
 <span class="p">},</span> <span class="p">{</span>
     <span class="nt">"vote"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">"when"</span><span class="p">:</span> <span class="s2">"Fri, 01 Feb 2013 18:21:56 -0000"</span><span class="p">,</span>
     <span class="nt">"user_id"</span><span class="p">:</span> <span class="s2">"gsalluzzo"</span><span class="p">,</span>
-    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0618640140"</span>
+    <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0618640140"</span><span class="p">,</span>
+    <span class="nt">"review"</span><span class="p">:</span> <span class="s2">"the ☃ loves lotr"</span>
 <span class="p">}]</span>
 </pre></div>
 
@@ -299,7 +313,7 @@ Date: Fri, 01 Feb 2013 17:23:51 GMT
 Server: mindflayer
 </code></pre>
 
-<div class="highlight"><pre><span class="p">[{</span>
+<div class="highlight highlight-json"><pre><span class="p">[{</span>
     <span class="nt">"amount"</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
     <span class="nt">"average"</span><span class="p">:</span> <span class="s2">"10.0"</span><span class="p">,</span>
     <span class="nt">"object_id"</span><span class="p">:</span> <span class="s2">"978-0618640140"</span><span class="p">,</span>
@@ -312,18 +326,21 @@ Server: mindflayer
 <span class="p">}]</span>
 </pre></div>
 
-<h2>Filters (on GET's views):</h2>
+<h2>
+<a name="filters-on-gets-views" class="anchor" href="#filters-on-gets-views"><span class="octicon octicon-link"></span></a>Filters (on GET's views):</h2>
 
 <ul>
 <li>
 <em>vote=</em> available on "/objects/&lt;<a>string:object_id</a>&gt;/" and "/objects/&lt;<a>string:object_id</a>&gt;/users/" interfaces.</li>
-</ul><h2>What's missing:</h2>
+</ul><h2>
+<a name="whats-missing" class="anchor" href="#whats-missing"><span class="octicon octicon-link"></span></a>What's missing:</h2>
 
 <ul>
 <li>List pagination; DONE!</li>
 <li>List sorting; DONE!</li>
 <li>Any suggestion?</li>
-</ul><h2>Thanks to:</h2>
+</ul><h2>
+<a name="thanks-to" class="anchor" href="#thanks-to"><span class="octicon octicon-link"></span></a>Thanks to:</h2>
 
 <ul>
 <li>
@@ -336,7 +353,8 @@ Server: mindflayer
 <strong>CherryPy</strong> project at <a href="http://cherrypy.org/">http://cherrypy.org/</a> - if you wanna try it right now!;</li>
 <li>
 <strong>Buongiorno S.p.A.</strong> -my company-, letting me open sources to the world.</li>
-</ul><h2>LICENSE</h2>
+</ul><h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>LICENSE</h2>
 
 <p>The MIT License (MIT)</p>
 
@@ -350,7 +368,7 @@ Server: mindflayer
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/BuongiornoMIP">BuongiornoMIP</a></p>
-        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></small></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
       </footer>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
