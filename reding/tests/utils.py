@@ -1,12 +1,8 @@
 from reding.app import app
-from reding.settings import rclient
-
 import unittest
 import json
-import redis
 from datetime import datetime
 from dateutil import parser as dtparser
-import pytz
 
 
 class RedingTestCase(unittest.TestCase):
@@ -16,7 +12,6 @@ class RedingTestCase(unittest.TestCase):
     def __init__(self, methodName='runTest'):
         super(RedingTestCase, self).__init__(methodName)
         self.app = app.test_client()
-        self.redis = rclient
 
     def assert_get(self, url):
         r = self.app.get(url)
@@ -40,12 +35,12 @@ class RedingTestCase(unittest.TestCase):
         self.assertEqual(r.mimetype, 'application/json')
         return r
 
-    def _check_post(self, response, object_id, user_id, vote):
-        now = datetime.utcnow().replace(tzinfo=pytz.utc)
+    def _check_post(self, response, object_id, user_id, vote, review=None):
         resp = json.loads(response.data)
         self.assertEqual(resp['object_id'], object_id)
         self.assertEqual(resp['user_id'], user_id)
         self.assertEqual(resp['vote'], vote)
+        self.assertEqual(resp['review'], review)
         self.user_vote_dates.setdefault(user_id, {})
         self.user_vote_dates[user_id][object_id] = resp['when']
         dt = dtparser.parse(resp['when'])

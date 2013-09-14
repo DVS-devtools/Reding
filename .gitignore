@@ -4,3 +4,4 @@ Reding.egg-info/
 .cache/
 .coverage
 VENV/
+.idea/

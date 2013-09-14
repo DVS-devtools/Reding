@@ -1,4 +1,5 @@
-from reding.settings import KEY_CONFIG, rclient
+from reding.managers import ObjectSubjectsManager, SubjectObjectsManager, ObjectsManager
+from reding.settings import KEY_CONFIG
 from reding.settings import PAGINATION_DEFAULT_OFFSET as OFFSET
 from reding.settings import PAGINATION_DEFAULT_SIZE as SIZE
 
@@ -6,49 +7,17 @@ from flask.ext.restful import reqparse, fields, marshal_with, abort
 from flask.ext import restful
 
 from time import time
-from datetime import datetime
+from six import text_type
 
 
-def add_vote_arg(parser, required=False):
-    parser.add_argument('vote', type=int, required=required, default=0)
-
-
-def add_config_args(parser):
-    for k in KEY_CONFIG:
-        parser.add_argument(k, type=str)
-
-
-def get_user_object_reply(object_id, user_id, vote, when):
+def get_user_object_reply(object_id, user_id, vote, when, review):
     return {
         'object_id': object_id,
         'user_id': user_id,
         'vote': vote,
         'when': when,
+        'review': review
     }
-
-
-def get_user_key_name(**kw):
-    t = "{prefix}:{subject}:{user_id}:{objects}"
-    return get_key_name(t, **kw)
-
-
-def get_object_key_name(**kw):
-    t = "{prefix}:{objects}"
-    return get_key_name(t, **kw)
-
-
-def get_user_object_key_name(**kw):
-    t = "{prefix}:{object}:{object_id}:{subjects}"
-    return get_key_name(t, **kw)
-
-
-def get_key_name(template, **kw):
-    kw = dict((key, value) for (key, value) in kw.iteritems() if value)
-
-    d = KEY_CONFIG.copy()
-    d.update(kw)
-
-    return template.format(**d)
 
 
 object_resource_fields = {
@@ -60,6 +29,7 @@ object_resource_fields = {
 
 user_object_resource_fields = {
     'vote': fields.Integer,
+    'review': fields.Raw,
     'object_id': fields.String,
     'user_id': fields.String,
     'when': fields.DateTime
@@ -67,20 +37,21 @@ user_object_resource_fields = {
 
 
 class RedingResource(restful.Resource):
-
-    redis = rclient
     parser_cls = reqparse.RequestParser
 
     def __init__(self):
         super(RedingResource, self).__init__()
         self.parser = self.parser_cls()
-        add_config_args(self.parser)
+        self.configure()
+
+    def configure(self):
+        for key in KEY_CONFIG:
+            self.parser.add_argument(key, type=str)
 
 
 class VotedListResource(RedingResource):
-
-    def __init__(self):
-        super(VotedListResource, self).__init__()
+    def configure(self):
+        super(VotedListResource, self).configure()
         self.parser.add_argument('object_id', type=str, action='append')
         self.parser.add_argument('sort', type=str, default='+')
         self.parser.add_argument('offset', type=int, default=OFFSET)
@@ -90,55 +61,25 @@ class VotedListResource(RedingResource):
     def get(self):
         args = self.parser.parse_args()
 
-        sort = '+'
-        if args['sort'] in ('-', '+'):
-            if args['sort'] == '-':
-                sort = '-'
-
-        if sort == '+':
-            amounts = self.redis.zrangebyscore(
-                get_object_key_name(**args),
-                '-inf',
-                '+inf',
-                withscores=True,
-                start=args['offset'],
-                num=args['size'],
-            )
-        else:
-            amounts = self.redis.zrevrangebyscore(
-                get_object_key_name(**args),
-                '+inf',
-                '-inf',
-                withscores=True,
-                start=args['offset'],
-                num=args['size'],
-            )
+        amounts = ObjectsManager(**args).scoredrange(
+            offset=args['offset'],
+            size=args['size'],
+            reverse=args['sort'] == '-',
+        )
 
         reply = []
-        for o, a in amounts:
-            args['object_id'] = o
-            n = self.redis.zcount(
-                get_user_object_key_name(
-                    **args
-                ),
-                '-inf',
-                '+inf',
-            )
-
-            average = 0
-            if n:
-                average = a / n
-
-                # skipping objects with zero votes
+        osmanager = ObjectSubjectsManager(**args)
+        for object_id, amount in amounts:
+            votes_no = osmanager.count(object_id=object_id)
+            if votes_no:  # skipping objects with no votes
                 reply.append(
                     dict(
-                        votes_no=n,
-                        average=average,
-                        amount=a,
-                        object_id=o,
+                        votes_no=votes_no,
+                        average=amount / votes_no,
+                        amount=amount,
+                        object_id=object_id,
                     )
                 )
-
         return reply
 
     def post(self):
@@ -149,78 +90,44 @@ class VotedListResource(RedingResource):
         """
         args = self.parser.parse_args()
 
-        sort = '+'
-        if args['sort'] in ('-', '+'):
-            if args['sort'].startswith('-'):
-                sort = '-'
-
-        objects = args['object_id']
-
-        if not objects:
-            return []
-
-        tmp_key = '{0}:tmp:{1}'.format(get_object_key_name(**args), int(time()))
-        tmp_dest_key = '{0}:tmp_dest:{1}'.format(get_object_key_name(**args), int(time()))
-
-        self.redis.sadd(tmp_key, *objects)
-        self.redis.zinterstore(tmp_dest_key, (get_object_key_name(**args), tmp_key), aggregate='SUM')
-
-        if sort == '+':
-            sorted = self.redis.zrangebyscore(tmp_dest_key, '-inf', '+inf')
-        else:
-            sorted = self.redis.zrevrangebyscore(tmp_dest_key, '+inf', '-inf')
-
-        self.redis.delete(tmp_key, tmp_dest_key)
-
-        sorted_set = set(sorted)
-        object_set = set(objects)
-
-        return sorted + list(object_set.difference(sorted_set))
+        return ObjectsManager(**args).filtered(
+            objects=args['object_id'],
+            now=int(time()),
+            reverse=args['sort'] == '-',
+        )
 
 
 class VotedSummaryResource(RedingResource):
+    def configure(self):
+        super(VotedSummaryResource, self).configure()
+        self.parser.add_argument('vote', type=int, default=0)
 
     @marshal_with(object_resource_fields)
     def get(self, object_id):
-        add_vote_arg(self.parser)
         args = self.parser.parse_args()
 
         vote = args['vote']
 
-        amount = self.redis.zscore(
-            get_object_key_name(**args),
-            object_id,
+        amount = ObjectsManager(**args).score(object_id=object_id) or 0
+
+        votes_no = ObjectSubjectsManager(**args).count(
+            object_id=object_id,
+            min_vote=vote or '-inf',
+            max_vote=vote or '+inf',
         )
 
-        min_vote = '-inf'
-        max_vote = '+inf'
-        if vote:
-            min_vote = vote
-            max_vote = vote
-
-        number = self.redis.zcount(
-            get_user_object_key_name(
-                object_id=object_id,
-                **args
-            ),
-            min_vote,
-            max_vote,
-        )
-
-        if not amount:
-            amount = 0  # FIXME can test this line with a single vote=0 to a new object
-        if not number:
+        if not votes_no:
             average = 0
             amount = 0
         elif vote:
             average = vote
-            amount = vote * number
+            amount = vote * votes_no
         else:
-            average = amount / number
+            average = amount / votes_no
 
         return (
             dict(
-                votes_no=number,
+                votes_no=votes_no,
                 average=average,
                 amount=amount,
                 object_id=object_id,
@@ -229,82 +136,49 @@ class VotedSummaryResource(RedingResource):
 
 
 class VotingUserListResource(RedingResource):
-
-    def __init__(self):
-        super(VotingUserListResource, self).__init__()
+    def configure(self):
+        super(VotingUserListResource, self).configure()
         self.parser.add_argument('sort', type=str, default='+')
         self.parser.add_argument('offset', type=int, default=OFFSET)
         self.parser.add_argument('size', type=int, default=SIZE)
-        add_vote_arg(self.parser)
+        self.parser.add_argument('vote', type=int, default=0)
 
     @marshal_with(user_object_resource_fields)
     def get(self, object_id):
         args = self.parser.parse_args()
 
-        sort = '+'
-        start = '-inf'
-        end = '+inf'
-        if args['sort'] in ('-', '+'):
-            if args['sort'].startswith('-'):
-                sort = '-'
-                start = '+inf'
-                end = '-inf'
+        osmanager = ObjectSubjectsManager(**args)
+        somanager = SubjectObjectsManager(**args)
 
-        vote = args['vote']
+        votes = osmanager.scoredrange(
+            object_id=object_id,
+            offset=args['offset'],
+            size=args['size'],
+            min_vote=args['vote'] or '-inf',
+            max_vote=args['vote'] or '+inf',
+            reverse=args['sort'] == '-',
+        )
 
-        if vote:
-            start = vote
-            end = vote
+        if not votes:
+            return []
 
-        if sort == '+':
-            votes = self.redis.zrangebyscore(
-                get_user_object_key_name(
-                    object_id=object_id,
-                    **args
-                ),
-                start,
-                end,
-                withscores=True,
-                start=args['offset'],
-                num=args['size'],
-            )
-        else:
-            votes = self.redis.zrevrangebyscore(
-                get_user_object_key_name(
-                    object_id=object_id,
-                    **args
-                ),
-                start,
-                end,
-                withscores=True,
-                start=args['offset'],
-                num=args['size'],
-            )
+        reviews = osmanager.reviews(object_id, *[user_id for user_id, _ in votes])
 
         reply = [
             get_user_object_reply(
                 object_id=object_id,
-                user_id=u,
-                vote=v,
-                when=datetime.fromtimestamp(
-                    self.redis.zscore(
-                        get_user_key_name(
-                            user_id=u,
-                            **args
-                        ),
-                        object_id,
-                    ),
-                ),
-            ) for u, v in votes
+                user_id=user_id,
+                vote=vote,
+                when=somanager.score(user_id=user_id, object_id=object_id),
+                review=reviews[user_id],
+            ) for user_id, vote in votes
         ]
-
         return reply
 
 
 class UserSummaryResource(RedingResource):
-
-    def __init__(self):
-        super(UserSummaryResource, self).__init__()
+    def configure(self):
+        super(UserSummaryResource, self).configure()
         self.parser.add_argument('sort', type=str, default='+')
         self.parser.add_argument('offset', type=int, default=OFFSET)
         self.parser.add_argument('size', type=int, default=SIZE)
@@ -313,98 +187,52 @@ class UserSummaryResource(RedingResource):
     def get(self, user_id):
         args = self.parser.parse_args()
 
-        sort = '+'
-        if args['sort'] in ('-', '+'):
-            if args['sort'].startswith('-'):
-                sort = '-'
+        osmanager = ObjectSubjectsManager(**args)
+        somanager = SubjectObjectsManager(**args)
 
-        if sort == '+':
-            votetimes = self.redis.zrangebyscore(
-                get_user_key_name(
-                    user_id=user_id,
-                    **args
-                ),
-                '-inf',
-                '+inf',
-                withscores=True,
-                start=args['offset'],
-                num=args['size'],
-            )
-        else:
-            votetimes = self.redis.zrevrangebyscore(
-                get_user_key_name(
-                    user_id=user_id,
-                    **args
-                ),
-                '+inf',
-                '-inf',
-                withscores=True,
-                start=args['offset'],
-                num=args['size'],
-            )
-
+        votetimes = somanager.scoredrange(
+            user_id=user_id,
+            offset=args['offset'],
+            size=args['size'],
+            reverse=args['sort'] == '-',
+        )
         reply = [
             get_user_object_reply(
-                object_id=o,
+                object_id=object_id,
                 user_id=user_id,
-                vote=self.redis.zscore(
-                    get_user_object_key_name(
-                        object_id=o,
-                        **args
-                    ),
-                    user_id,
-                ),
-                when=datetime.fromtimestamp(
-                    self.redis.zscore(
-                        get_user_key_name(
-                            user_id=user_id,
-                            **args
-                        ),
-                        o,
-                    ),
-                )
-            ) for o, t in votetimes
+                vote=osmanager.score(object_id=object_id, user_id=user_id),
+                review=osmanager.review(object_id=object_id, user_id=user_id),
+                when=when,
+            ) for object_id, when in votetimes
         ]
 
         return reply
 
 
 class VoteSummaryResource(RedingResource):
-
     @marshal_with(user_object_resource_fields)
     def get(self, object_id, user_id):
         args = self.parser.parse_args()
 
-        vote = self.redis.zscore(
-            get_user_object_key_name(
-                object_id=object_id,
-                **args
-            ),
-            user_id,
-        )
+        osmanager = ObjectSubjectsManager(**args)
+        somanager = SubjectObjectsManager(**args)
 
-        when_ts = self.redis.zscore(
-            get_user_key_name(
-                user_id=user_id,
-                **args
-            ),
-            object_id,
-        )
+        vote = osmanager.score(object_id=object_id, user_id=user_id)
+        when = somanager.score(user_id=user_id, object_id=object_id)
 
-        if not (vote and when_ts):
-            m = "No vote on {object_id} by {user_id}.".format(
+        if not (vote and when):
+            message = "No vote on {object_id} by {user_id}.".format(
                 object_id=object_id,
                 user_id=user_id
             )
-            abort(404, message=m)
+            abort(404, message=message)
 
         return get_user_object_reply(
             object_id=object_id,
             user_id=user_id,
             vote=vote,
-            when=datetime.fromtimestamp(
-                when_ts,
-            ),
+            when=when,
+            review=osmanager.review(object_id=object_id, user_id=user_id),
         )
 
     def post(self, object_id, user_id):
@@ -412,108 +240,43 @@ class VoteSummaryResource(RedingResource):
 
     @marshal_with(user_object_resource_fields)
     def put(self, object_id, user_id):
-        add_vote_arg(self.parser, required=True)
+        self.parser.add_argument('vote', type=int, required=True)
+        self.parser.add_argument('review', type=text_type)
         args = self.parser.parse_args()
 
-        next_vote = args['vote']
+        osmanager = ObjectSubjectsManager(**args)
+        somanager = SubjectObjectsManager(**args)
 
-        self._perform_correction(object_id, user_id, next_vote, args)
-
-        self.redis.zadd(
-            get_user_object_key_name(
-                object_id=object_id,
-                **args
-            ),
-            next_vote,
-            user_id,
-        )
-
-        self.redis.zadd(
-            get_user_key_name(
-                user_id=user_id,
-                **args
-            ),
-            time(),
-            object_id,
-        )
+        self._perform_correction(object_id, user_id, args['vote'], args)
+        osmanager.create(object_id=object_id, user_id=user_id, vote=args['vote'], review=args['review'])
+        somanager.create(user_id=user_id, object_id=object_id, timestamp=time())
 
         return get_user_object_reply(
             object_id=object_id,
             user_id=user_id,
-            vote=self.redis.zscore(
-                get_user_object_key_name(
-                    object_id=object_id,
-                    **args
-                ),
-                user_id,
-            ),
-            when=datetime.fromtimestamp(
-                self.redis.zscore(
-                    get_user_key_name(
-                        user_id=user_id,
-                        **args
-                    ),
-                    object_id,
-                ),
-            )
+            vote=osmanager.score(object_id=object_id, user_id=user_id),
+            when=somanager.score(user_id=user_id, object_id=object_id),
+            review=osmanager.review(object_id=object_id, user_id=user_id),
         )
 
     def delete(self, object_id, user_id):
         args = self.parser.parse_args()
 
-        next_vote = 0
-        self._perform_correction(object_id, user_id, next_vote, args)
-
-        self.redis.zrem(
-            get_user_key_name(
-                user_id=user_id,
-                **args
-            ),
-            object_id,
-        )
-
-        self.redis.zrem(
-            get_user_object_key_name(
-                object_id=object_id,
-                **args
-            ),
-            user_id,
-        )
+        self._perform_correction(object_id, user_id, 0, args)
+        SubjectObjectsManager(**args).remove(user_id=user_id, object_id=object_id)
+        ObjectSubjectsManager(**args).remove(object_id=object_id, user_id=user_id)
 
         return '', 204
 
     def _perform_correction(self, object_id, user_id, next_vote, args):
-        prev_vote = self.redis.zscore(
-            get_user_object_key_name(
-                object_id=object_id,
-                **args
-            ),
-            user_id,
-        )
-
-        if not prev_vote:
-            prev_vote = 0
-
+        prev_vote = ObjectSubjectsManager(**args).score(object_id=object_id, user_id=user_id) or 0
         correction = next_vote - prev_vote
+        omanager = ObjectsManager(**args)
+        omanager.incrby(object_id=object_id, delta=correction)
+        amount = omanager.score(object_id=object_id)
 
-        # perform vote correction in `all apps` zset
-        if correction:
-            self.redis.zincrby(
-                get_object_key_name(**args),
-                object_id,
-                correction,
-            )
-
-        amount = self.redis.zscore(
-            get_object_key_name(**args),
-            object_id,
-        )
-
-        if not amount and amount == 0:
-            self.redis.zrem(
-                get_object_key_name(**args),
-                object_id,
-            )
+        if amount == 0:
+            omanager.remove(object_id=object_id)
 
 __all__ = (
     'VotedSummaryResource',
