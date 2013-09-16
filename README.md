@@ -232,7 +232,6 @@ Server: mindflayer
     "object_id": "978-0618640140",
     "review": "the ☃ loves lotr"
 }
-}
 ```
 
 Let's see the books I voted and what I wrote about them:
