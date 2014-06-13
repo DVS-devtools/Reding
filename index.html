@@ -78,7 +78,7 @@ Server: mindflayer
 
 <p>I wanna give a '10' to the amazing 'Core Python Applications Programming' book (ISBN-13: 978-0132678209):</p>
 
-<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/ -d "vote=10"
+<pre><code>$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/ -H 'Content-Type: application/json' -d '{"vote":10}'
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 110
@@ -330,7 +330,7 @@ Server: mindflayer
 
 <ul>
 <li>
-<em>vote=</em> available on "/objects/&lt;<a>string:object_id</a>&gt;/" and "/objects/&lt;<a>string:object_id</a>&gt;/users/" interfaces.</li>
+<em>vote=</em> available on "/objects/&lt;string:object_id&gt;/" and "/objects/&lt;string:object_id&gt;/users/" interfaces.</li>
 </ul><h2>
 <a name="whats-missing" class="anchor" href="#whats-missing"><span class="octicon octicon-link"></span></a>What's missing:</h2>
 
