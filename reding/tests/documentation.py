@@ -12,6 +12,9 @@ managers.rclient = redis.StrictRedis(
 
 
 class RedingDocumentationTestCase(RedingTestCase):
+
+    querystring_params = [('prefix', 'mynamespace')]
+
     def test_00_voted_list_resource_empty(self):
         managers.rclient.flushdb()
         response = self.assert_get('/objects/')
