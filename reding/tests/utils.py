@@ -29,10 +29,7 @@ class RedingTestCase(unittest.TestCase):
     user_vote_dates = {}
     querystring_params = []
     url = ''
-
-    def __init__(self, methodName='runTest'):
-        super(RedingTestCase, self).__init__(methodName)
-        self.app = app.test_client()
+    app = app.test_client()
 
     def set_url_with_querystring_params(self, url):
         self.url = url

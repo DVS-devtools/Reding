@@ -25,14 +25,14 @@ class RedingDocumentationTestCase(RedingTestCase):
             u'object_id': u'978-0132678209',
             u'user_id': u'gsalluzzo',
         }
-        headers = []
+        headers = [('Content-Type', 'application/json')]
         data = {
             u'vote': 10,
         }
         response = self.assert_post_or_put(
             '/objects/{object_id}/users/{user_id}/'.format(**url_parts),
             headers,
-            data,
+            json.dumps(data),
         )
         data.update(url_parts)
         self._check_post(response, **data)
