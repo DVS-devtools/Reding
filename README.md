@@ -37,7 +37,7 @@ Server: mindflayer
 
 I wanna give a '10' to the amazing 'Core Python Applications Programming' book (ISBN-13: 978-0132678209):
 ```
-$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/ -d "vote=10"
+$ curl -i -XPUT http://localhost:5000/objects/978-0132678209/users/gsalluzzo/ -H 'Content-Type: application/json' -d '{"vote":10}'
 HTTP/1.1 200 OK
 Content-Type: application/json
 Content-Length: 110
